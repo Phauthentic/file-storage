@@ -1,0 +1,76 @@
+filter:
+    excluded_paths:
+    - bin/*
+    - vendor/*
+    - tests/*
+    - config/*
+    - docs/*
+    - public/*
+    - tests/bootstrap.php
+    dependency_paths:
+    - vendor/*
+
+build_failure_conditions:
+- 'patches.label("Spacing").new.count > 1'     # More than 1 new spacing patch
+
+- 'issues.label("coding-style").exists'        # No coding style issues allowed
+- 'issues.label("coding-style").new.exists'    # No new coding style issues allowed
+
+- 'issues.label("coding-style").new.count > 1' # More than 1 new coding style issues.
+- 'issues.severity(>= MAJOR).new.exists'       # New issues of major or higher severity
+
+- 'project.metric("scrutinizer.quality", < 9)' # Code Quality Rating drops below 9
+
+# Code Coverage decreased from previous inspection by more than 1%
+- 'project.metric_change("scrutinizer.test_coverage", < -0.1)'
+
+build:
+    services:
+      #mariadb: 10.1.40
+    environment:
+        hosts:
+            cake3.world-architects.com: '127.0.0.1'
+        redis: true
+        node: 10.16.0
+        php:
+            version: '7.4'
+            ini:
+                phar.readonly: 'Off'
+        #elasticsearch: '6'
+
+    nodes:
+        tests-php73:
+            environment:
+                php:
+                    version: '7.3'
+                    ini:
+                        phar.readonly: 'Off'
+            tests:
+                override:
+                - sh ./config/ci-setup.sh
+                -
+                    command: './bin/phpunit --coverage-clover=coverage.xml --bootstrap ./tests/bootstrap.php'
+                    coverage:
+                        file: 'coverage.xml'
+                        format: 'php-clover'
+
+        tests-php74:
+            environment:
+                php:
+                    version: '7.4'
+                    ini:
+                        phar.readonly: 'Off'
+            tests:
+                override:
+                - sh ./config/ci-setup.sh
+                -
+                    command: './bin/phpunit --coverage-clover=coverage.xml --bootstrap ./tests/bootstrap.php'
+                    coverage:
+                        file: 'coverage.xml'
+                        format: 'php-clover'
+
+        analysis:
+            tests:
+                override:
+                - php-scrutinizer-run --enable-security-analysis
+                - phpcs-run --standard=./phpcs.xml ./src

@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Copyright (c) Florian Krämer (https://florian-kraemer.net)
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright (c) Florian Krämer (https://florian-kraemer.net)
+ * @author    Florian Krämer
+ * @link      https://github.com/Phauthentic
+ * @license   https://opensource.org/licenses/MIT MIT License
+ */
+
+declare(strict_types=1);
+
+namespace Phauthentic\Infrastructure\Storage;
+
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
+
+/**
+ * File Factory Interface
+ */
+interface FileFactoryInterface
+{
+    /**
+     * Create a file storage object from the PSR interface
+     *
+     * @param \Psr\Http\Message\UploadedFileInterface $uploadedFile PSR Uploaded File
+     * @param string $storage Storage to use
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     */
+    public static function fromUploadedFile(
+        UploadedFileInterface $uploadedFile,
+        string $storage
+    ): FileInterface;
+
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request Request
+     * @param string $storage Storage
+     * @return array
+     */
+    public static function fromUploadedFiles(ServerRequestInterface $request, string $storage): array;
+
+    /**
+     * From local disk
+     *
+     * @param string $path Path to local file
+     * @param string $storage Storage
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     */
+    public static function fromDisk(string $path, string $storage): FileInterface;
+}

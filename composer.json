@@ -1,0 +1,90 @@
+{
+    "name": "phauthentic/file-storage",
+    "description": "File Storage",
+    "keywords": ["storage", "files", "file storage", "file system", "persistence", "media", "image processing", "agnostic"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Florian Krämer",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "phauthentic/file-storage-factories": "dev-master",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "instituteweb/composer-scripts": "^1.1",
+        "intervention/image": "^2.5",
+        "spatie/image-optimizer": "^1.2"
+    },
+    "suggest": {
+        "spatie/image-optimizer": "^1.2",
+        "intervention/image": "^2.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "bin-dir": "bin",
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Phauthentic\\Infrastructure\\Storage\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phauthentic\\Test\\": "tests"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:phauthentic/file-storage-factories.git"
+        }
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "php config/composer_post_install.php"
+        ],
+        "test": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpunit"
+        ],
+        "test-coverage": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpunit --coverage-text"
+        ],
+        "test-coverage-html": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpunit --coverage-html ./tmp/coverage"
+        ],
+        "cscheck": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpcs ./src ./tests --standard=./phpcs.xml -s"
+        ],
+        "csfix": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpcbf ./src ./tests --standard=./phpcs.xml"
+        ],
+        "analyze": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "./bin/phpstan analyse ./src -l 5"
+        ],
+        "phive": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "php ./config/composer_phive.php"
+        ],
+        "serve": [
+            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
+            "php -S localhost:8081 -t ./public"
+        ]
+    }
+}
