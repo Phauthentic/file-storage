@@ -32,11 +32,11 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
     protected array $manipulations;
 
     /**
-     * @return static
+     * @return self
      */
     public static function create(): self
     {
-        return new static();
+        return new self();
     }
 
     /**
@@ -45,7 +45,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public static function fromArray(array $manipulations)
     {
-        $that = new static();
+        $that = new self();
 
         foreach ($manipulations as $name => $data) {
             $manipulation = ImageManipulation::create($name);

@@ -42,7 +42,7 @@ class PathBuilderTest extends TestCase
             $result
         );
 
-        $result = $builder->pathForManipulation($file,'resizeAndFlip');
+        $result = $builder->pathForManipulation($file, 'resizeAndFlip');
         $this->assertEquals(
             $this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.7ae239.jpg'),
             $result

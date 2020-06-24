@@ -24,15 +24,6 @@ use Phauthentic\Infrastructure\Storage\FileInterface;
 interface PathBuilderInterface
 {
     /**
-     * Builds the filename of under which the data gets saved in the storage adapter.
-     *
-     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
-     * @param array $options
-     * @return string
-     */
-    public function filename(FileInterface $file, array $options = []): string;
-
-    /**
      * Builds the path under which the data gets stored in the storage adapter.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file

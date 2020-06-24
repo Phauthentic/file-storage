@@ -81,7 +81,7 @@ class Psr7StreamWrapper
         }
     }
 
-    public function stream_open(string $path, string $mode, int $options, string &$opened_path = null): bool
+    public function stream_open(string $path, string $mode, int $options, string &$opened_path = null): bool // phpcs:ignore
     {
         $options = stream_context_get_options($this->context);
 
@@ -99,7 +99,7 @@ class Psr7StreamWrapper
      * @param int $count Count
      * @return string
      */
-    public function stream_read(int $count): string
+    public function stream_read(int $count): string // phpcs:ignore
     {
         return $this->stream->read($count);
     }
@@ -108,7 +108,7 @@ class Psr7StreamWrapper
      * @param string $data Data
      * @return int
      */
-    public function stream_write(string $data): int
+    public function stream_write(string $data): int // phpcs:ignore
     {
         return $this->stream->write($data);
     }
@@ -116,7 +116,7 @@ class Psr7StreamWrapper
     /**
      * @return int
      */
-    public function stream_tell(): int
+    public function stream_tell(): int // phpcs:ignore
     {
         return $this->stream->tell();
     }
@@ -124,7 +124,7 @@ class Psr7StreamWrapper
     /**
      * @return bool
      */
-    public function stream_eof(): bool
+    public function stream_eof(): bool // phpcs:ignore
     {
         return $this->stream->eof();
     }
@@ -134,7 +134,7 @@ class Psr7StreamWrapper
      * @param int $whence Whence
      * @return bool
      */
-    public function stream_seek(int $offset, int $whence): bool
+    public function stream_seek(int $offset, int $whence): bool // phpcs:ignore
     {
         $this->stream->seek($offset, $whence);
 
@@ -144,7 +144,7 @@ class Psr7StreamWrapper
     /**
      * @return resource|false
      */
-    public function stream_cast(int $cast_as)
+    public function stream_cast(int $cast_as) // phpcs:ignore
     {
         $stream = clone($this->stream);
         $resource = $stream->detach();
@@ -155,7 +155,7 @@ class Psr7StreamWrapper
     /**
      * @return array<int|string, int>
      */
-    public function stream_stat(): array
+    public function stream_stat(): array // phpcs:ignore
     {
         static $modeMap = [
             'r'  => 33060,
@@ -187,7 +187,7 @@ class Psr7StreamWrapper
      * @param int $flags Flags
      * @return array<int|string, int>
      */
-    public function url_stat(string $path, int $flags): array
+    public function url_stat(string $path, int $flags): array // phpcs:ignore
     {
         return [
             'dev'     => 0,

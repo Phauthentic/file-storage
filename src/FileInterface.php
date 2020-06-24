@@ -76,8 +76,7 @@ interface FileInterface extends JsonSerializable
     /**
      * Resource to store
      *
-     * @return resource
-     * @return static
+     * @return resource|null
      */
     public function resource();
 
@@ -87,6 +86,14 @@ interface FileInterface extends JsonSerializable
      * @return null|string
      */
     public function collection(): ?string;
+
+    /**
+     * Adds the file to a collection
+     *
+     * @param string $collection Collection
+     * @return $this
+     */
+    public function addToCollection(string $collection): self;
 
     /**
      * Manipulation
@@ -200,4 +207,29 @@ interface FileInterface extends JsonSerializable
      * @return string|null
      */
     public function extension(): ?string;
+
+    /**
+     * UUID of the file
+     *
+     * @param string $uuid UUID string
+     * @return self
+     */
+    public function withUuid(string $uuid): self;
+
+    /**
+     * Filename
+     *
+     * @param string $filename Filename
+     * @return self
+     */
+    public function withFilename(string $filename): self;
+
+    /**
+     * Assign a model and model id to a file
+     *
+     * @param string $model Model
+     * @param string|int $modelId Model ID, UUID string or integer
+     * @return $this
+     */
+    public function belongsToModel(string $model, $modelId): self;
 }

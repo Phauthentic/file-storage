@@ -34,11 +34,11 @@ class ImageManipulation extends Manipulation
 
     /**
      * @param string $name Name
-     * @return static
+     * @return self
      */
-    public static function create(string $name): ImageManipulation
+    public static function create(string $name): self
     {
-        $self = new static();
+        $self = new self();
         $self->name = $name;
 
         return $self;
@@ -57,8 +57,8 @@ class ImageManipulation extends Manipulation
     }
 
     /**
-     * @param int $width Width
-     * @param int|null $height Height
+     * @param int $height Width
+     * @param int|null $width Height
      * @param int|null $x X
      * @param int|null $y Y
      * @return $this

@@ -19,11 +19,11 @@ namespace Phauthentic\Infrastructure\Storage\Exception;
 /**
  * Storage Exception
  */
-final class FileNotReadableException extends StorageException
+class FileNotReadableException extends StorageException
 {
     public static function filename(string $file): self
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'File %s is not readable',
             $file
         ));

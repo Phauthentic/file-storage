@@ -9,7 +9,7 @@ $ds = DIRECTORY_SEPARATOR;
 
 if (!file_exists('.' . $ds . 'phive.phar')) {
     echo 'Downloading Phive (https://phar.io/)...' . PHP_EOL;
-	file_put_contents('.' . $ds . 'phive.phar', file_get_contents('https://phar.io/releases/phive.phar'));
+    file_put_contents('.' . $ds . 'phive.phar', file_get_contents('https://phar.io/releases/phive.phar'));
 }
 
 $output = '';

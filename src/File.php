@@ -117,7 +117,7 @@ class File implements FileInterface
      * @param array $manipulations Manipulations
      * @param array $metadata Meta data
      * @param resource|null $resource
-     * @return static
+     * @return self
      */
     public static function create(
         string $filename,
@@ -131,7 +131,7 @@ class File implements FileInterface
         array $metadata = [],
         $resource = null
     ): self {
-        $that = new static();
+        $that = new self();
 
         $that->filename = $filename;
         $that->filesize = $filesize;

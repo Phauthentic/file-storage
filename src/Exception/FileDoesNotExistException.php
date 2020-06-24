@@ -19,11 +19,11 @@ namespace Phauthentic\Infrastructure\Storage\Exception;
 /**
  * Storage Exception
  */
-final class FileDoesNotExistException extends StorageException
+class FileDoesNotExistException extends StorageException
 {
     public static function filename(string $file): self
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'File %s does not exist',
             $file
         ));

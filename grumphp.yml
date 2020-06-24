@@ -1,0 +1,23 @@
+# grumphp.yml
+grumphp:
+    hooks_dir: ~
+    hooks_preset: local
+    stop_on_failure: true
+    ignore_unstaged_changes: true
+    fixer:
+        enabled: true
+        fix_by_default: true
+    parallel:
+        enabled: true
+        max_workers: 32
+    tasks:
+        phpunit:
+        phpstan:
+            configuration: 'phpstan.neon'
+            level: 4
+            ignore_patterns:
+                - /^tests\/(.*)/
+        phpcs:
+            whitelist_patterns:
+                - /^src\/(.*)/
+                - /^tests\/(.*)/

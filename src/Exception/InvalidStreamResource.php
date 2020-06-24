@@ -19,11 +19,11 @@ namespace Phauthentic\Infrastructure\Storage\Exception;
 /**
  * Invalid Stream Resource
  */
-final class InvalidStreamResource extends StorageException
+class InvalidStreamResource extends StorageException
 {
     public static function create(): self
     {
-        return new static(
+        return new self(
             'The provided value is not a valid stream resource',
         );
     }

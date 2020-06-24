@@ -23,11 +23,11 @@ final class UnsupportedOperationException extends ImageProcessingException
 {
     /**
      * @param string $name Name
-     * @return static
+     * @return self
      */
-    public static function withName(string $name)
+    public static function withName(string $name): self
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'Operation `%s` is not implemented or supported',
             $name
         ));

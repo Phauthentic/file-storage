@@ -91,12 +91,25 @@ class PathBuilder implements PathBuilderInterface
     {
         $config = array_merge($this->config, $options);
 
-        $path = str_replace(
-            ['{ds}', '{model}', '{collection}', '{id}', '{randomPath}', '{modelId}'],
-            [DIRECTORY_SEPARATOR, $file->model(), $file->collection(), $this->stripDashes($file->uuid()), $this->randomPath($file->uuid()), $file->modelId()],
-            $config['pathTemplate']
-        );
+        $search = [
+            '{ds}',
+            '{model}',
+            '{collection}',
+            '{id}',
+            '{randomPath}',
+            '{modelId}'
+        ];
 
+        $replace = [
+            DIRECTORY_SEPARATOR,
+            $file->model(),
+            $file->collection(),
+            $this->stripDashes($file->uuid()),
+            $this->randomPath($file->uuid()),
+            $file->modelId()
+        ];
+
+        $path = str_replace($search, $replace, $config['pathTemplate']);
         $path = $this->ensureSlash($path, 'after');
         $path .= $this->filename($file, $config);
 
@@ -124,11 +137,25 @@ class PathBuilder implements PathBuilderInterface
             $filename = $this->filenameSanitizer->beautify($pathInfo->filename());
         }
 
-        $filename = str_replace(
-            ['{model}', '{collection}', '{id}', '{modelId}', '{filename}', '{extension}'],
-            [$file->model(), $file->collection(), $this->stripDashes($file->uuid()), $file->modelId(), $filename, $pathInfo->extension()],
-            $config['filenameTemplate']
-        );
+        $search = [
+            '{model}',
+            '{collection}',
+            '{id}',
+            '{modelId}',
+            '{filename}',
+            '{extension}'
+        ];
+
+        $replace = [
+            $file->model(),
+            $file->collection(),
+            $this->stripDashes($file->uuid()),
+            $file->modelId(),
+            $filename,
+            $pathInfo->extension()
+        ];
+
+        $filename = str_replace($search, $replace, $config['filenameTemplate']);
 
         return $filename;
     }

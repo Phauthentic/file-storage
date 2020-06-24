@@ -28,7 +28,8 @@
         <phar url="someone/somerepo" />
     -->
   <phar name="phpunit" version="^9.0" installed="9.0.1" location="./bin/phpunit" copy="true"/>
-  <phar name="phpstan" version="^0.12.29" installed="0.12.29" location="./bin/phpstan" copy="true"/>
+  <phar name="phpstan" version="^0.12.30" installed="0.12.30" location="./bin/phpstan" copy="true"/>
   <phar name="phpcs" version="^3.5.3" installed="3.5.3" location="./bin/phpcs" copy="true"/>
   <phar name="phpcbf" version="^3.5.3" installed="3.5.4" location="./bin/phpcbf" copy="true"/>
+  <phar name="grumphp" version="^0.19.1" installed="0.19.1" location="./bin/grumphp" copy="true"/>
 </phive>
