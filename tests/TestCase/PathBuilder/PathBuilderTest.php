@@ -17,10 +17,23 @@ class PathBuilderTest extends TestCase
     /**
      * @return void
      */
-    public function testBuilder(): void
+    public function testPathWithEmptyPlaceHolders(): void
     {
         $file = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($file, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
 
+        $builder = new PathBuilder();
+        $result = $builder->path($file);
+
+        $this->assertEquals($this->sanitizeSeparator('\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.jpg'), $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testBuilder(): void
+    {
         $collection = ImageManipulationCollection::create();
         $collection
             ->addNew('resizeAndFlip')
@@ -28,6 +41,7 @@ class PathBuilderTest extends TestCase
             ->resize(300, 300)
             ->optimize();
 
+        $file = $this->getFixtureFile('titus.jpg');
         $file = FileFactory::fromDisk($file, 'local')
             ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
             ->addToCollection('avatar')
