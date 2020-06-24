@@ -47,11 +47,11 @@ class ConditionalPathBuilder implements PathBuilderInterface
     }
 
     /**
-     * @param callable $conditionCheck Condition check
      * @param \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface $pathBuilder Path Builder
+     * @param callable $conditionCheck Condition check
      * @return $this
      */
-    public function addPathBuilder(callable $conditionCheck, PathBuilderInterface $pathBuilder): self
+    public function addPathBuilder(PathBuilderInterface $pathBuilder, callable $conditionCheck): self
     {
         $this->pathBuilders[] = [
             'callable' => $conditionCheck,
