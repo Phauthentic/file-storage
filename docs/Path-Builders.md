@@ -4,8 +4,10 @@ Path builders are used to generate the path the file gets stored under in the st
 
 ## Default Path Builder
 
+The library comes with a pretty powerful path builder that allows you to build the path you want from a lot of variables that can be put together in a string template for the files path and manipulations of the file.
+
 ```
-$other = new PathBuilder([
+$builder = new PathBuilder([
     // Configure your options
 ]);
 ```
