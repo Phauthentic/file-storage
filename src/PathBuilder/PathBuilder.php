@@ -201,7 +201,7 @@ class PathBuilder implements PathBuilderInterface
         $result = $this->parseTemplate($placeholders, $template, $ds);
 
         $pathInfo = PathInfo::for($result);
-        if (!$pathInfo->hasExtension() && substr($result,  -1) === '.') {
+        if (!$pathInfo->hasExtension() && substr($result, -1) === '.') {
             return substr($result, 0, -1);
         }
 
