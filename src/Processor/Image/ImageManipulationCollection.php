@@ -19,7 +19,7 @@ namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 use ArrayIterator;
 use IteratorAggregate;
 use JsonSerializable;
-use RuntimeException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\ManipulationExistsException;
 
 /**
  * Conversion Collection
@@ -93,10 +93,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
     public function add(ImageManipulation $manipulation): void
     {
         if ($this->has($manipulation->name())) {
-            throw new RuntimeException(sprintf(
-                'A manipulation with the name `%s` already exists',
-                $manipulation->name()
-            ));
+            throw ManipulationExistsException::withName($manipulation->name());
         }
 
         $this->manipulations[$manipulation->name()] = $manipulation;

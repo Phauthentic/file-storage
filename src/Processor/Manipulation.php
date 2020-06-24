@@ -21,9 +21,10 @@ namespace Phauthentic\Infrastructure\Storage\Processor;
  */
 abstract class Manipulation implements ManipulationInterface
 {
-    protected string $name;
+    protected string $name = '';
     protected array $operations = [];
-    protected string $path;
+    protected string $path = '';
+    protected string $url = '';
 
     /**
      * @return array
@@ -33,7 +34,8 @@ abstract class Manipulation implements ManipulationInterface
         return [
             'name' => $this->name,
             'operations' => $this->operations,
-            'path' => $this->path
+            'path' => $this->path,
+            'url' => $this->url,
         ];
     }
 
@@ -59,6 +61,18 @@ abstract class Manipulation implements ManipulationInterface
     public function hasOperations(): bool
     {
         return count($this->operations) > 0;
+    }
+
+    /**
+     * @param string $url Path
+     * @return self
+     */
+    public function withUrl(string $url): self
+    {
+        $that = clone $this;
+        $that->url = $url;
+
+        return $that;
     }
 
     /**

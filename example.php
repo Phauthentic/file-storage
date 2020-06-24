@@ -67,7 +67,7 @@ $storageService->loadAdapterConfigFromArray([
  ******************************************************************************/
 
 $pathBuilder = new PathBuilder();
-$fileHandler = new FileStorage(
+$fileStorage = new FileStorage(
     $storageService,
     $pathBuilder
 );
@@ -75,13 +75,16 @@ $imageManager = new ImageManager([
     'driver' => 'gd'
 ]);
 $imageManipulator = new ImageProcessor(
-    $fileHandler,
+    $fileStorage,
     $pathBuilder,
     $imageManager
 );
 
 /*******************************************************************************
  * Working with files
+ *
+ * This is a very exhaustive example for demonstrating what can bed done,
+ * setting the id would be already enough!
  ******************************************************************************/
 
 // This is pretty exhaustive, you can go with just the uuid() as well!
@@ -96,7 +99,7 @@ $file = FileFactory::fromDisk('./tests/Fixtures/titus.jpg', 'local')
     ])
     ->withMetadataKey('bar', 'foo');
 
-$file = $fileHandler->store($file);
+$file = $fileStorage->store($file);
 
 /*******************************************************************************
  * Creating manipulated versions of the file
@@ -125,7 +128,7 @@ echo var_export($file->toArray(), true);
  * Removing the file
  ******************************************************************************/
 
-//$fileHandler->remove($file);
+$fileStorage->remove($file);
 
 /*******************************************************************************
  * Just some output

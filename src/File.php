@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
-use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResource;
+use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use RuntimeException;
 
@@ -207,7 +207,7 @@ class File implements FileInterface
             !is_resource($resource)
             || get_resource_type($resource) !== 'stream'
         ) {
-            throw InvalidStreamResource::create();
+            throw InvalidStreamResourceException::create();
         }
     }
 

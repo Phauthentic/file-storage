@@ -36,6 +36,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
         'removeAllNonAlphaNumerical' => false,
         'beautify' => true,
         'enforceMaxLength' => true,
+        'maxLength' => 255,
         'removeControlChars' => true,
         'removeNonPrintingChars' => true,
         'removeUriReservedChars' => false,
@@ -125,7 +126,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
         }
 
         if ($this->config['enforceMaxLength'] === true) {
-            $string = $this->enforceMaxLength($string);
+            $string = $this->enforceMaxLength($string, $this->config['maxLength']);
         }
 
         return $string;
@@ -203,7 +204,14 @@ class FilenameSanitizer implements FilenameSanitizerInterface
      */
     protected function removeAllNonAlphaNumerical(string $string): string
     {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $string);
+        $pathInfo = PathInfo::for($string);
+        $string = preg_replace('/[^a-zA-Z0-9]/', '', $pathInfo->filename());
+
+        if (!$pathInfo->hasExtension()) {
+            return $string;
+        }
+
+        return $string . '.' . $pathInfo->extension();
     }
 
     /**

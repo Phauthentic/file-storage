@@ -51,6 +51,7 @@ class ImageManipulationCollectionTest extends TestCase
                 ],
                 'path' => '',
                 'optimize' => true,
+                'url' => ''
             ],
         ];
 

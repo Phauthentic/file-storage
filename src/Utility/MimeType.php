@@ -31,7 +31,7 @@ class MimeType
     /**
      * @var array
      */
-    protected static $extensionToMimeTypeMap = [
+    protected static array $extensionToMimeTypeMap = [
         'hqx' => 'application/mac-binhex40',
         'cpt' => 'application/mac-compactpro',
         'csv' => 'text/csv',

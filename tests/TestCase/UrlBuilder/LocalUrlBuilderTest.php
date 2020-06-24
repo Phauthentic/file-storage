@@ -6,6 +6,7 @@ namespace Phauthentic\Test\TestCase\UrlBuilder;
 
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
 use Phauthentic\Infrastructure\Storage\UrlBuilder\LocalUrlBuilder;
 use Phauthentic\Test\TestCase\TestCase;
 
@@ -31,5 +32,15 @@ class LocalUrlBuilderTest extends TestCase
 
         $result = $urlBuilder->url($file);
         $this->assertEquals('/User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.jpg', $result);
+
+        $file = $file->withManipulations([
+            'crop' => ImageManipulation::create('crop')
+                ->withUrl('User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.crop.jpg')
+                ->crop(100, 100)
+                ->toArray()
+        ]);
+
+        $result = $urlBuilder->urlForManipulation($file, 'crop');
+        $this->assertEquals('/User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.crop.jpg', $result);
     }
 }

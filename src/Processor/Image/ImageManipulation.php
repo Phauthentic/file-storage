@@ -28,6 +28,7 @@ class ImageManipulation extends Manipulation
     protected array $operations;
     protected string $path = '';
     protected bool $optimize = false;
+    protected string $url = '';
 
     public const FLIP_HORIZONTAL = 'h';
     public const FLIP_VERTICAL = 'v';
@@ -148,7 +149,8 @@ class ImageManipulation extends Manipulation
         return [
             'operations' => $this->operations,
             'path' => $this->path,
-            'optimize' => $this->optimize
+            'optimize' => $this->optimize,
+            'url' => $this->url
         ];
     }
 }

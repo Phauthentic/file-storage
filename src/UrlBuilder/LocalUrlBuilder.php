@@ -58,6 +58,10 @@ class LocalUrlBuilder implements UrlBuilderInterface
     */
     public function urlForManipulation(FileInterface $file, string $manipulation): string
     {
+        if (!isset($file->manipulations()[$manipulation])) {
+            //return '';
+        }
+
         return $this->buildBaseUrl() . $file->manipulations()[$manipulation]['url'];
     }
 

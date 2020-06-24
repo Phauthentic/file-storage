@@ -14,17 +14,22 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Exception;
+namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
 
 /**
- * Invalid Stream Resource
+ * ManipulationExistsException
  */
-class InvalidStreamResource extends StorageException
+class ManipulationExistsException extends ManipulationException
 {
-    public static function create(): self
+    /**
+     * @param string $name Name
+     * @return self
+     */
+    public static function withName(string $name): self
     {
-        return new self(
-            'The provided value is not a valid stream resource',
-        );
+        return new self(sprintf(
+            'A manipulation with the name `%s` already exists',
+            $name
+        ));
     }
 }
