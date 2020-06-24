@@ -51,12 +51,24 @@ class ImageProcessor implements ProcessorInterface
      */
     protected array $processOnlyTheseVersions = [];
 
+    /**
+     * @var \Phauthentic\Infrastructure\Storage\FileStorageInterface
+     */
     protected FileStorageInterface $storageHandler;
 
+    /**
+     * @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface
+     */
     protected PathBuilderInterface $pathBuilder;
 
+    /**
+     * @var \Intervention\Image\ImageManager
+     */
     protected ImageManager $imageManager;
 
+    /**
+     * @var \Intervention\Image\Image
+     */
     protected Image $image;
 
     /**
@@ -116,6 +128,35 @@ class ImageProcessor implements ProcessorInterface
     }
 
     /**
+     * Read the data from the files resource if (still) present,
+     * if not fetch it from the storage backend and write the data
+     * to the stream of the temp file
+     *
+     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
+     * @param resource $tempFileStream Temp File Stream Resource
+     * @return int|bool False on error
+     */
+    protected function copyOriginalFileData(FileInterface $file, $tempFileStream)
+    {
+        $stream = $file->resource();
+        $storage = $this->storageHandler->getStorage($file->storage());
+
+        if ($stream === null) {
+            $stream = $storage->readStream($file->path());
+            $stream = $stream['stream'];
+        } else {
+            rewind($stream);
+        }
+        $result = stream_copy_to_stream(
+            $stream,
+            $tempFileStream
+        );
+        fclose($tempFileStream);
+
+        return $result;
+    }
+
+    /**
      * @inheritDoc
      */
     public function process(FileInterface $file): FileInterface
@@ -124,19 +165,16 @@ class ImageProcessor implements ProcessorInterface
             return $file;
         }
 
+        $storage = $this->storageHandler->getStorage($file->storage());
+
         // Create a local tmp file on the processing system / machine
         $tempFile = TemporaryFile::create();
         $tempFileStream = fopen($tempFile, 'wb+');
 
-        // Get the file from the storage system and copy it to the temp file
-        $storage = $this->storageHandler->getStorage($file->storage());
-        $stream = $storage->readStream($file->path());
-        $result = stream_copy_to_stream(
-            $stream['stream'],
-            $tempFileStream
-        );
-        fclose($tempFileStream);
-        unset($tempFileStream);
+        // Read the data from the files resource if (still) present,
+        // if not fetch it from the storage backend and write the data
+        // to the stream of the temp file
+        $result = $this->copyOriginalFileData($file, $tempFileStream);
 
         // Stop if the temp file could not be generated
         if ($result === false) {
