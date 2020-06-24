@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
+use League\Flysystem\AdapterInterface;
+
 /**
  * StorageHandlerInterface
  */
@@ -37,4 +39,12 @@ interface FileStorageInterface
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
     public function remove(FileInterface $file): FileInterface;
+
+    /**
+     * Gets the storage abstraction to use
+     *
+     * @param string $storage Storage name to use
+     * @return \League\Flysystem\AdapterInterface
+     */
+    public function getStorage(string $storage): AdapterInterface;
 }

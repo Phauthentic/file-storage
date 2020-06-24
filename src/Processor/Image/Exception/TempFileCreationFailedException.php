@@ -23,11 +23,11 @@ class TempFileCreationFailedException extends ImageProcessingException
 {
     /**
      * @param string $name Name
-     * @return static
+     * @return self
      */
-    public static function withFilename(string $name)
+    public static function withFilename(string $name): self
     {
-        return new static(sprintf(
+        return new self(sprintf(
             'Failed to create `%s`',
             $name
         ));

@@ -2,7 +2,7 @@
 
 The *File* object is the central object in this library around which all functionality has being built. The file object contains all information needed to store retrieve the file later from a storage backend. It also has methods to add manipulations to the file that are checked and applied by a *File Processor*. This can be image or video processing for example in the most common cases.
 
-The file object is serializeable to json and you can call `toArray()` on it to turn it into an array that you can either save in the structure you get or continue transforming it into whatever structure your persistence layer expects.
+The file object is serializable to json, and you can call `toArray()` on it to turn it into an array that you can either save in the structure you get or continue transforming it into whatever structure your persistence layer expects.
 
 You'll have to reconstruct the file object later from your persisted information when you want to come back to it later and work with new manipulations for example. Depending on your architecture, your domain model could also simply implement the `FileInterface` if this is more convenient for your.
 

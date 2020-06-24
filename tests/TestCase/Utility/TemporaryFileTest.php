@@ -26,7 +26,7 @@ class TemporaryFileTest extends TestCase
 
         $ds = DIRECTORY_SEPARATOR;
         $previousTmpFolder = TemporaryFile::tempDir();
-        $tmpFolder = (__DIR__ . $ds . '..' . $ds . '..' . $ds. '..' . $ds . 'tmp');
+        $tmpFolder = (__DIR__ . $ds . '..' . $ds . '..' . $ds . '..' . $ds . 'tmp');
         TemporaryFile::setTempFolder($tmpFolder);
 
         $result = TemporaryFile::create();

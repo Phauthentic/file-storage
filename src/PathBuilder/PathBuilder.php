@@ -35,14 +35,13 @@ class PathBuilder implements PathBuilderInterface
      * @var array
      */
     protected array $defaultConfig = [
-        'stripUuid' => true,
+        'directorySeparator' => DIRECTORY_SEPARATOR,
         'randomPath' => 'sha1',
         'sanitizeFilename' => true,
         'beautifyFilename' => false,
         'sanitizer' => null,
-        'pathTemplate' => '{model}{ds}{randomPath}{ds}{id}',
-        'filenameTemplate' => '{filename}.{extension}',
-        'manipulationTemplate' => '{filename}.{manipulation}.{extension}'
+        'pathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{extension}',
+        'manipulationPathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{hashedManipulation}.{extension}'
     ];
 
     /**
@@ -70,17 +69,6 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
-     * Strips dashes from a string
-     *
-     * @param string $uuid UUID as string
-     * @return string String without the dashed
-     */
-    protected function stripDashes(string $uuid): string
-    {
-        return str_replace('-', '', $uuid);
-    }
-
-    /**
      * Builds the path under which the data gets stored in the storage adapter.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
@@ -89,30 +77,26 @@ class PathBuilder implements PathBuilderInterface
      */
     public function path(FileInterface $file, array $options = []): string
     {
-        $config = array_merge($this->config, $options);
-
-        $path = str_replace(
-            ['{ds}', '{model}', '{collection}', '{id}', '{randomPath}', '{modelId}'],
-            [DIRECTORY_SEPARATOR, $file->model(), $file->collection(), $this->stripDashes($file->uuid()), $this->randomPath($file->uuid()), $file->modelId()],
-            $config['pathTemplate']
-        );
-
-        $path = $this->ensureSlash($path, 'after');
-        $path .= $this->filename($file, $config);
-
-        return $path;
+        return $this->buildPath($file, null, $options);
     }
 
     /**
-     * Builds the filename of under which the data gets saved in the storage adapter.
-     *
+     * @inheritDoc
+     */
+    public function pathForManipulation(FileInterface $file, string $manipulation, array $options = []): string
+    {
+        return $this->buildPath($file, $manipulation, $options);
+    }
+
+    /**
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
      * @param array $options Options
      * @return string
      */
-    public function filename(FileInterface $file, array $options = []): string
+    protected function filename(FileInterface $file, array $options = []): string
     {
         $config = array_merge($this->config, $options);
+
         $pathInfo = PathInfo::for($file->filename());
         $filename = $pathInfo->filename();
 
@@ -123,12 +107,6 @@ class PathBuilder implements PathBuilderInterface
         if ($config['beautifyFilename'] === true) {
             $filename = $this->filenameSanitizer->beautify($pathInfo->filename());
         }
-
-        $filename = str_replace(
-            ['{model}', '{collection}', '{id}', '{modelId}', '{filename}', '{extension}'],
-            [$file->model(), $file->collection(), $this->stripDashes($file->uuid()), $file->modelId(), $filename, $pathInfo->extension()],
-            $config['filenameTemplate']
-        );
 
         return $filename;
     }
@@ -183,58 +161,62 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
-     * Ensures that a path has a leading and/or trailing (back-) slash.
-     *
-     * @param string $string
-     * @param string $position Can be `before`, `after` or `both`
-     * @param string|null $ds Directory separator should be / or \, if not set the DIRECTORY_SEPARATOR constant is used.
-     * @throws \InvalidArgumentException
-     * @return string
+     * @inheritDoc
      */
-    protected function ensureSlash(string $string, string $position, ?string $ds = null): string
+    protected function buildPath(FileInterface $file, ?string $manipulation, array $options = []): string
     {
-        if (!in_array($position, ['before', 'after', 'both'])) {
-            $method = get_class($this) . '::ensureSlash(): ';
-            throw new InvalidArgumentException(sprintf(
-                $method . 'Invalid position `%s`!',
-                $position
-            ));
+        $config = array_merge($this->config, $options);
+        $ds = $this->config['directorySeparator'];
+        $filename = $this->filename($file, $options);
+        $hashedManipulation = substr(hash('sha1', (string)$manipulation), 0, 6);
+        $template = $manipulation ? $config['manipulationPathTemplate'] : $config['pathTemplate'];
+
+        $placeholders = [
+            '{ds}' => $ds,
+            '{model}' => $file->model(),
+            '{collection}' => $file->collection(),
+            '{id}' => $file->uuid(),
+            '{randomPath}' => $this->randomPath($file->uuid()),
+            '{modelId}' => $file->modelId(),
+            '{strippedId}' => str_replace('-', '', $file->uuid()),
+            '{extension}' => $file->extension(),
+            '{mimeType}' => $file->mimeType(),
+            '{filename}' => $filename,
+            '{hashedFilename}' => sha1($filename),
+            '{manipulation}' => $manipulation,
+            '{hashedManipulation}' => $hashedManipulation
+        ];
+
+        $result = $this->parseTemplate($placeholders, $template, $ds);
+
+        $pathInfo = PathInfo::for($result);
+        if (!$pathInfo->hasExtension() && substr($result, -1) === '.') {
+            return substr($result, 0, -1);
         }
 
-        if ($ds === null) {
-            $ds = DIRECTORY_SEPARATOR;
-        }
-
-        if ($position === 'before' || $position === 'both') {
-            if (strpos($string, $ds) !== 0) {
-                $string = $ds . $string;
-            }
-        }
-
-        if ($position === 'after' || $position === 'both') {
-            if ($string[strlen($string) - 1] !== $ds) {
-                $string .= $ds;
-            }
-        }
-
-        return $string;
+        return $result;
     }
 
     /**
-     * @inheritDoc
+     * Parses the path string template
+     *
+     * @param array $placeholders Assoc array of placeholder to value
+     * @param string $template Template string
+     * @param string $separator Directory Separator
+     * @return string
      */
-    public function pathForManipulation(FileInterface $file, string $name, array $options = []): string
-    {
-        $hash = substr(hash('sha1', $name), 0, 6);
-        $path = $this->path($file);
-        $pathInfo = PathInfo::for($path);
-        $ds = DIRECTORY_SEPARATOR;
+    protected function parseTemplate(
+        array $placeholders,
+        string $template,
+        string $separator
+    ): string {
+        $result = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template
+        );
 
-        $path = $pathInfo->dirname() . $ds . $pathInfo->filename();
-        if ($pathInfo->hasExtension()) {
-            return $path . '.' . $hash . '.' . $pathInfo->extension();
-        }
-
-        return $path . $pathInfo->extension();
+        // Remove double or more separators caused by empty template vars
+        return  preg_replace('/(\\\{2,})|(\/{2,})/', $separator, $result);
     }
 }

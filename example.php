@@ -34,7 +34,8 @@ function memoryOutput()
     echo PHP_EOL;
 }
 
-memoryOutput();;
+memoryOutput();
+;
 
 /*******************************************************************************
  * Configuring the stores - Your DIC or bootstrapping should do this
@@ -124,7 +125,7 @@ echo var_export($file->toArray(), true);
  * Removing the file
  ******************************************************************************/
 
-$fileHandler->remove($file);
+//$fileHandler->remove($file);
 
 /*******************************************************************************
  * Just some output

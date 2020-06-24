@@ -11,5 +11,4 @@
     <!-- Use this if you want tabs over spaces -->
     <!-- <rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>-->
     <file>./src</file>
-    <file>./tests</file>
 </ruleset>

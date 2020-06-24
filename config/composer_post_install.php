@@ -1,3 +1,3 @@
 <?php
-require_once 'composer_phive.php';
 
+require_once 'composer_phive.php';
