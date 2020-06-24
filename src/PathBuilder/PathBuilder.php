@@ -89,17 +89,6 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
-     * Strips dashes from a string
-     *
-     * @param string $uuid UUID as string
-     * @return string String without the dashed
-     */
-    protected function stripDashes(string $uuid): string
-    {
-        return str_replace('-', '', $uuid);
-    }
-
-    /**
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
      * @param array $options Options
      * @return string
@@ -189,7 +178,7 @@ class PathBuilder implements PathBuilderInterface
             '{id}' => $file->uuid(),
             '{randomPath}' => $this->randomPath($file->uuid()),
             '{modelId}' => $file->modelId(),
-            '{strippedId}' => $this->stripDashes($file->uuid()),
+            '{strippedId}' => str_replace('-', '', $file->uuid()),
             '{extension}' => $file->extension(),
             '{mimeType}' => $file->mimeType(),
             '{filename}' => $filename,
