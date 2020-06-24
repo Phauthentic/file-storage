@@ -69,6 +69,26 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
+     * Builds the path under which the data gets stored in the storage adapter.
+     *
+     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
+     * @param array $options Options
+     * @return string
+     */
+    public function path(FileInterface $file, array $options = []): string
+    {
+        return $this->buildPath($file, null, $options);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function pathForManipulation(FileInterface $file, string $manipulation, array $options = []): string
+    {
+        return $this->buildPath($file, $manipulation, $options);
+    }
+
+    /**
      * Strips dashes from a string
      *
      * @param string $uuid UUID as string
@@ -100,36 +120,6 @@ class PathBuilder implements PathBuilderInterface
         }
 
         return $filename;
-    }
-
-    /**
-     * Builds the path under which the data gets stored in the storage adapter.
-     *
-     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
-     * @param array $options Options
-     * @return string
-     */
-    public function path(FileInterface $file, array $options = []): string
-    {
-        $config = array_merge($this->config, $options);
-        $ds = $this->config['directorySeparator'];
-        $filename = $this->filename($file, $options);
-
-        $placeholders = [
-            '{ds}' => $ds,
-            '{model}' => $file->model(),
-            '{collection}' => $file->collection(),
-            '{id}' => $file->uuid(),
-            '{randomPath}' => $this->randomPath($file->uuid()),
-            '{modelId}' => $file->modelId(),
-            '{strippedId}' => $this->stripDashes($file->uuid()),
-            '{extension}' => $file->extension(),
-            '{mimeType}' => $file->mimeType(),
-            '{filename}' => $filename,
-            '{hashedFilename}' => sha1($filename),
-        ];
-
-        return $this->parseTemplate($placeholders, $config['pathTemplate'], $ds);
     }
 
     /**
@@ -184,12 +174,13 @@ class PathBuilder implements PathBuilderInterface
     /**
      * @inheritDoc
      */
-    public function pathForManipulation(FileInterface $file, string $manipulation, array $options = []): string
+    protected function buildPath(FileInterface $file, ?string $manipulation, array $options = []): string
     {
         $config = array_merge($this->config, $options);
         $ds = $this->config['directorySeparator'];
         $filename = $this->filename($file, $options);
-        $hashedManipulation = substr(hash('sha1', $manipulation), 0, 6);
+        $hashedManipulation = substr(hash('sha1', (string)$manipulation), 0, 6);
+        $template = $manipulation ? $config['manipulationPathTemplate'] : $config['pathTemplate'];
 
         $placeholders = [
             '{ds}' => $ds,
@@ -207,7 +198,7 @@ class PathBuilder implements PathBuilderInterface
             '{hashedManipulation}' => $hashedManipulation
         ];
 
-        $result = $this->parseTemplate($placeholders, $config['manipulationPathTemplate'], $ds);
+        $result = $this->parseTemplate($placeholders, $template, $ds);
 
         $pathInfo = PathInfo::for($result);
         if (!$pathInfo->hasExtension() && substr($result,  -1) === '.') {
