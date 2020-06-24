@@ -4,13 +4,19 @@ Path builders are used to generate the path the file gets stored under in the st
 
 ## Default Path Builder
 
+```
+$other = new PathBuilder([
+    // Configure your options
+]);
+```
+
 ### Options:
 
- * **randomPath**: 'sha1',
- * **sanitizeFilename**: true,
- * **beautifyFilename**: false,
- * **sanitizer**: null,
- * **pathTemplate**: '{model}{ds}{randomPath}{ds}{id}',
+ * **randomPath**: 'sha1'
+ * **sanitizeFilename**: true
+ * **beautifyFilename**: false
+ * **sanitizer**: null
+ * **pathTemplate**: '{model}{ds}{randomPath}{ds}{id}'
  * **manipulationTemplate**: '{filename}.{manipulation}.{extension}'
 
 ### Path Template Placeholders
@@ -32,9 +38,27 @@ The following placeholders are only valid when used in a path for a manipulated 
  * **{manipulation}**: The name of the manipulation
  * **{hashedManipulation}**: A hashed and to six chars truncated version of the manipulation name.
 
+## Conditional Path Builder
+
+Add callbacks and path builders to check on the file which of the builders should be used to build the path.
+
+This allows you to use different instances with a different configuration or implementation of path builders for files of different types or in different collections or models.
+
+```php
+$default = new PathBuilder();
+$other = new PathBuilder([
+    // Configure it differently
+]);
+
+$builder = new ConditionalPathBuilder($default);
+$builder->addPathBuilder($other, function(FileInterface $file, ?string $manipulation = null) {
+    return ($file->model() === 'User' && $file->collection() === 'Avatar');
+});
+```
+
 ## Implementing your own
 
-To implement your own path builder simply implement the [PathBuilderInterface](../src/PathBuilder/PathBuilderInterface.php).
+To implement your own path builder implement the [PathBuilderInterface](../src/PathBuilder/PathBuilderInterface.php).
 
 ```php
 MyPathBuilder implements PathBuilderInterface
