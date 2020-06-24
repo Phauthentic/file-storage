@@ -554,9 +554,12 @@ class File implements FileInterface
             'mimeType' => $this->mimeType,
             'extension' => $this->extension,
             'path' => $this->path,
-            'metaData' => $this->metadata,
+            'model' => $this->model,
+            'modelId' => $this->modelId,
+            'collection' => $this->collection,
+            'readableSize' => $this->readableSize(),
             'manipulations' => $this->manipulations,
-            'readableSize' => $this->readableSize()
+            'metaData' => $this->metadata,
         ];
     }
 
