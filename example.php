@@ -8,7 +8,7 @@ use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageProcessor;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulationCollection;
 use Phauthentic\Infrastructure\Storage\FileStorage;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
 use Phauthentic\Infrastructure\Storage\StorageService;
@@ -20,8 +20,7 @@ use Intervention\Image\ImageManager;
 
 function readableSize(int $size, int $precision = 2)
 {
-    for ($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {
-    }
+    for ($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {}
 
     return round($size, $precision) . ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][$i];
 }
@@ -35,10 +34,9 @@ function memoryOutput()
 }
 
 memoryOutput();
-;
 
 /*******************************************************************************
- * Configuring the stores - Your DIC or bootstrapping should do this
+ * Configuring the stores - Your DI container or bootstrapping should do this
  ******************************************************************************/
 
 $ds = DIRECTORY_SEPARATOR;
@@ -63,18 +61,21 @@ $storageService->loadAdapterConfigFromArray([
 ]);
 
 /*******************************************************************************
- * Build services - Your DIC should do this for you
+ * Build services - Your DI container should do this for you
  ******************************************************************************/
 
 $pathBuilder = new PathBuilder();
+
 $fileStorage = new FileStorage(
     $storageService,
     $pathBuilder
 );
+
 $imageManager = new ImageManager([
     'driver' => 'gd'
 ]);
-$imageManipulator = new ImageProcessor(
+
+$imageProcessor = new ImageProcessor(
     $fileStorage,
     $pathBuilder,
     $imageManager
@@ -87,7 +88,6 @@ $imageManipulator = new ImageProcessor(
  * setting the id would be already enough!
  ******************************************************************************/
 
-// This is pretty exhaustive, you can go with just the uuid() as well!
 $file = FileFactory::fromDisk('./tests/Fixtures/titus.jpg', 'local')
     ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
     ->withFilename('foobar.jpg')
@@ -101,28 +101,31 @@ $file = FileFactory::fromDisk('./tests/Fixtures/titus.jpg', 'local')
 
 $file = $fileStorage->store($file);
 
+echo var_export($file->toArray(), true);
+echo PHP_EOL . PHP_EOL;
+
 /*******************************************************************************
  * Creating manipulated versions of the file
  ******************************************************************************/
 
-$file = $file->withManipulations([
-    'resizeAndFlip' => ImageManipulation::create('resizeAndFlip')
-        ->flipHorizontal()
-        ->resize(300, 300)
-        ->optimize()
-        ->toArray(),
-    'crop' => ImageManipulation::create('crop')
-        ->crop(100, 100)
-        ->toArray()
-]);
+$collection = ImageManipulationCollection::create();
+$collection->addNew('resizeAndFlip')
+    ->flipHorizontal()
+    ->resize(300, 300)
+    ->optimize();
+$collection->addNew('crop')
+    ->crop(100, 100);
 
-$file = $imageManipulator
+$file = $file->withManipulations($collection->toArray());
+
+$file = $imageProcessor
     ->processOnlyTheseVersions([
         //'resizeAndFlip'
     ])
     ->process($file);
 
 echo var_export($file->toArray(), true);
+echo PHP_EOL;
 
 /*******************************************************************************
  * Removing the file

@@ -1,18 +1,26 @@
 # Architecture
 
-The *File* object is the central object in this library around which all functionality has being built. The file object contains all information needed to store retrieve the file later from a storage backend. It also has methods to add manipulations to the file that are checked and applied by a *File Processor*. This can be image or video processing for example in the most common cases.
+## Background
+
+The whole library is build with clear Separation of Concerns (SoC) in mind: A file is always an entry in a database from the app perspective. The database (table) is the reference to the real place of where the file is stored and keeps some information like mime type, filename and size as well. Storing the path to a file inside an arbitrary table along other data is considered as bad practice because it doesn't respect SoC from an architecture perspective, but many people do it this way for some reason.
+
+## The file object
+
+The *File* object is the central object in this library around which all functionality has being built. The file object contains all information needed to store and retrieve the file later from a storage backend. It also has methods to add manipulations to the file that are checked and applied by a *Processor*. This can be image or video processing for example in the most common cases.
 
 The file object is serializable to json, and you can call `toArray()` on it to turn it into an array that you can either save in the structure you get or continue transforming it into whatever structure your persistence layer expects.
 
 You'll have to reconstruct the file object later from your persisted information when you want to come back to it later and work with new manipulations for example. Depending on your architecture, your domain model could also simply implement the `FileInterface` if this is more convenient for your.
 
- * Create file object
-   * Add resource handle of file to it
- * Store file using the file storage service
- * Use a processor to apply manipulations to the file
- * Read file and manipulated files from the backend using the service
+## Workflow
 
-The processors can be instantiated and used a lone without further dependencies on the service. This enables you to use them very easy in your applications shell.
+ * Create file object.
+   * Add a resource handle of a file to it (if it is a new file).
+ * Store file using the file storage service.
+ * Use a processor to apply manipulations to the file.
+ * Read file and manipulated files from the backend using the FileStorageService.
+
+The processors can be instantiated and used alone without further dependencies on the service. This enables you to use them very easy in your applications shell for example.
 
 ## Caveats
 

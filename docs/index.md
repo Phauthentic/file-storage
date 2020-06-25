@@ -1,8 +1,8 @@
 # File Storage Documentation
 
  * [Installation & Setup](Installation-and-Setup.md)
- * [Dependencies explained](Dependencies-Explained.md)
  * [Architecture](Architecture.md)
+   * [Dependencies](Dependencies.md)
  * [Path Builders](Path-Builders.md)
  * [URL Builders](URL-Builders.md)
  * [Storing Files](Storing-Files.md)
