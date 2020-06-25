@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Phauthentic\Test\TestCase\Processor\Image;
 
 use ArrayIterator;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulationCollection;
 use Phauthentic\Test\TestCase\TestCase;
 
@@ -28,7 +29,24 @@ class ImageManipulationCollectionTest extends TestCase
     /**
      * @return void
      */
-    public function testFile(): void
+    public function testCollectionSetAndGet(): void
+    {
+        $collection = ImageManipulationCollection::create();
+        $this->assertCount(0, $collection);
+
+        $collection
+            ->addNew('flipHorizontal')
+            ->flipHorizontal()
+            ->optimize();
+
+        $this->assertCount(1, $collection);
+        $this->assertInstanceOf(ImageManipulation::class, $collection->get('flipHorizontal'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testCollection(): void
     {
         $collection = ImageManipulationCollection::create();
         $collection
@@ -51,7 +69,7 @@ class ImageManipulationCollectionTest extends TestCase
         $expected = [
             'resizeAndFlip' => [
                 'operations' => [
-                    'flip' => [
+                    'flipHorizontal' => [
                         'direction' => 'h',
                     ],
                     'resize' => [
@@ -72,7 +90,12 @@ class ImageManipulationCollectionTest extends TestCase
         $collection2 = ImageManipulationCollection::fromArray($expected);
         $this->assertEquals($expected, $collection2->toArray());
 
+        $this->assertTrue($collection2->has('resizeAndFlip'));
         $collection2->remove('resizeAndFlip');
         $this->assertFalse($collection2->has('resizeAndFlip'));
+
+        $expected = '{"resizeAndFlip":{"operations":{"flipHorizontal":{"direction":"h"},"resize":{"width":300,"height":300,"aspectRatio":true,"preventUpscale":false}},"path":"","url":"","optimize":true}}';
+        $result = json_encode($collection);
+        $this->assertEquals($expected, $result);
     }
 }

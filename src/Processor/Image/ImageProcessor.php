@@ -315,6 +315,30 @@ class ImageProcessor implements ProcessorInterface
     }
 
     /**
+     * Flips the image horizontal
+     *
+     * @link http://image.intervention.io/api/flip
+     * @param array $arguments Arguments
+     * @return void
+     */
+    protected function flipHorizontal(array $arguments): void
+    {
+        $this->flip(['direction' => 'h']);
+    }
+
+    /**
+     * Flips the image vertical
+     *
+     * @link http://image.intervention.io/api/flip
+     * @param array $arguments Arguments
+     * @return void
+     */
+    protected function flipVertical(array $arguments): void
+    {
+        $this->flip(['direction' => 'v']);
+    }
+
+    /**
      * Flips the image
      *
      * @link http://image.intervention.io/api/flip

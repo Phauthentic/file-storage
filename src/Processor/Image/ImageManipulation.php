@@ -102,7 +102,9 @@ class ImageManipulation extends Manipulation
      */
     public function flipHorizontal(): self
     {
-        $this->flip(static::FLIP_HORIZONTAL);
+        $this->operations['flipHorizontal'] = [
+            'direction' => self::FLIP_HORIZONTAL
+        ];
 
         return $this;
     }
@@ -114,7 +116,9 @@ class ImageManipulation extends Manipulation
      */
     public function flipVertical(): self
     {
-        $this->flip(static::FLIP_VERTICAL);
+        $this->operations['flipVertical'] = [
+            'direction' => self::FLIP_VERTICAL
+        ];
 
         return $this;
     }
@@ -149,8 +153,8 @@ class ImageManipulation extends Manipulation
         return [
             'operations' => $this->operations,
             'path' => $this->path,
+            'url' => $this->url,
             'optimize' => $this->optimize,
-            'url' => $this->url
         ];
     }
 }

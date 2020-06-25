@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
 use JsonSerializable;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\ManipulationExistsException;
@@ -24,12 +25,12 @@ use Phauthentic\Infrastructure\Storage\Processor\Exception\ManipulationExistsExc
 /**
  * Conversion Collection
  */
-class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
+class ImageManipulationCollection implements JsonSerializable, IteratorAggregate, Countable
 {
     /**
      * @var array
      */
-    protected array $manipulations;
+    protected array $manipulations = [];
 
     /**
      * @return self
@@ -58,9 +59,11 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
             }
 
             foreach ($data['operations'] as $method => $args) {
-                if (method_exists($manipulation, $method)) {
-                    call_user_func_array([$manipulation, $method], $args);
+                if (!method_exists($manipulation, $method)) {
+                    throw new \RuntimeException('Operation not supported');
                 }
+
+                $manipulation = call_user_func_array([$manipulation, $method], $args);
             }
 
             $that->add($manipulation);
@@ -69,7 +72,11 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
         return $that;
     }
 
-    public function addNew($name)
+    /**
+     * @param string $name Name
+     * @return \Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation
+     */
+    public function addNew(string $name)
     {
         $this->add(ImageManipulation::create($name));
 
@@ -121,7 +128,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public function jsonSerialize()
     {
-        return $this->manipulations;
+        return $this->toArray();
     }
 
     /**
@@ -143,5 +150,13 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
         }
 
         return $array;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return count($this->manipulations);
     }
 }
