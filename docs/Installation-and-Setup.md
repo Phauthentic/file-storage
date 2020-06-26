@@ -27,3 +27,9 @@ It will download Phive and execute it to install phar versions of these dev tool
  * [phpcbf](https://github.com/squizlabs/PHP_CodeSniffer/)
  * [phpstan](https://phpstan.org/)
  * [grumphp](https://github.com/phpro/grumphp)
+
+To register grumphp git hooks run
+
+```sh
+.\bin\grumphp git:init
+```

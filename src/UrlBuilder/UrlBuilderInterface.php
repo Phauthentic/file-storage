@@ -34,5 +34,5 @@ interface UrlBuilderInterface
     * @param string $version Version
     * @return string
     */
-    public function urlForManipulation(FileInterface $file, string $version): string;
+    public function urlForVariant(FileInterface $file, string $version): string;
 }

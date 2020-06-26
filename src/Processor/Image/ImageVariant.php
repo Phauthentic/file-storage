@@ -17,17 +17,18 @@ declare(strict_types=1);
 namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 
 use InvalidArgumentException;
-use Phauthentic\Infrastructure\Storage\Processor\Manipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Variant;
 
 /**
  * Image Manipulation
  */
-class ImageManipulation extends Manipulation
+class ImageVariant extends Variant
 {
     protected string $name;
     protected array $operations;
     protected string $path = '';
     protected bool $optimize = false;
+    protected string $url = '';
 
     public const FLIP_HORIZONTAL = 'h';
     public const FLIP_VERTICAL = 'v';
@@ -101,7 +102,9 @@ class ImageManipulation extends Manipulation
      */
     public function flipHorizontal(): self
     {
-        $this->flip(static::FLIP_HORIZONTAL);
+        $this->operations['flipHorizontal'] = [
+            'direction' => self::FLIP_HORIZONTAL
+        ];
 
         return $this;
     }
@@ -113,7 +116,9 @@ class ImageManipulation extends Manipulation
      */
     public function flipVertical(): self
     {
-        $this->flip(static::FLIP_VERTICAL);
+        $this->operations['flipVertical'] = [
+            'direction' => self::FLIP_VERTICAL
+        ];
 
         return $this;
     }
@@ -148,7 +153,8 @@ class ImageManipulation extends Manipulation
         return [
             'operations' => $this->operations,
             'path' => $this->path,
-            'optimize' => $this->optimize
+            'url' => $this->url,
+            'optimize' => $this->optimize,
         ];
     }
 }

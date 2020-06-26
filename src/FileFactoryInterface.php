@@ -37,13 +37,6 @@ interface FileFactoryInterface
     ): FileInterface;
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request Request
-     * @param string $storage Storage
-     * @return array
-     */
-    public static function fromUploadedFiles(ServerRequestInterface $request, string $storage): array;
-
-    /**
      * From local disk
      *
      * @param string $path Path to local file

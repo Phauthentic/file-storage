@@ -17,19 +17,20 @@ declare(strict_types=1);
 namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
 use JsonSerializable;
-use RuntimeException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantExistsException;
 
 /**
  * Conversion Collection
  */
-class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
+class ImageVariantCollection implements JsonSerializable, IteratorAggregate, Countable
 {
     /**
      * @var array
      */
-    protected array $manipulations;
+    protected array $variants = [];
 
     /**
      * @return self
@@ -40,38 +41,44 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
     }
 
     /**
-     * @param array $manipulations Manipulations array structure
+     * @param array $variants Variant array structure
      * @return self
      */
-    public static function fromArray(array $manipulations)
+    public static function fromArray(array $variants)
     {
         $that = new self();
 
-        foreach ($manipulations as $name => $data) {
-            $manipulation = ImageManipulation::create($name);
+        foreach ($variants as $name => $data) {
+            $variant = ImageVariant::create($name);
             if (isset($data['optimize']) && $data['optimize'] === true) {
-                $manipulation = $manipulation->optimize();
+                $variant = $variant->optimize();
             }
 
             if (!empty($data['path']) && is_string($data['path'])) {
-                $manipulation = $manipulation->withPath($data['path']);
+                $variant = $variant->withPath($data['path']);
             }
 
             foreach ($data['operations'] as $method => $args) {
-                if (method_exists($manipulation, $method)) {
-                    call_user_func_array([$manipulation, $method], $args);
+                if (!method_exists($variant, $method)) {
+                    throw new \RuntimeException('Operation not supported');
                 }
+
+                $variant = call_user_func_array([$variant, $method], $args);
             }
 
-            $that->add($manipulation);
+            $that->add($variant);
         }
 
         return $that;
     }
 
-    public function addNew($name)
+    /**
+     * @param string $name Name
+     * @return \Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant
+     */
+    public function addNew(string $name)
     {
-        $this->add(ImageManipulation::create($name));
+        $this->add(ImageVariant::create($name));
 
         return $this->get($name);
     }
@@ -79,27 +86,24 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
     /**
      * Gets a manipulation from the collection
      *
-     * @return \Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation
+     * @return \Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant
      */
-    public function get($name): ImageManipulation
+    public function get($name): ImageVariant
     {
-        return $this->manipulations[$name];
+        return $this->variants[$name];
     }
 
     /**
-     * @param \Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation $manipulation Manipulation
+     * @param \Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant $variant Variant
      * @return void
      */
-    public function add(ImageManipulation $manipulation): void
+    public function add(ImageVariant $variant): void
     {
-        if ($this->has($manipulation->name())) {
-            throw new RuntimeException(sprintf(
-                'A manipulation with the name `%s` already exists',
-                $manipulation->name()
-            ));
+        if ($this->has($variant->name())) {
+            throw VariantExistsException::withName($variant->name());
         }
 
-        $this->manipulations[$manipulation->name()] = $manipulation;
+        $this->variants[$variant->name()] = $variant;
     }
 
     /**
@@ -108,7 +112,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public function has(string $name): bool
     {
-        return isset($this->manipulations[$name]);
+        return isset($this->variants[$name]);
     }
 
     /**
@@ -116,7 +120,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public function remove(string $name): void
     {
-        unset($this->manipulations[$name]);
+        unset($this->variants[$name]);
     }
 
     /**
@@ -124,7 +128,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public function jsonSerialize()
     {
-        return $this->manipulations;
+        return $this->toArray();
     }
 
     /**
@@ -132,7 +136,7 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->manipulations);
+        return new ArrayIterator($this->variants);
     }
 
     /**
@@ -141,10 +145,18 @@ class ImageManipulationCollection implements JsonSerializable, IteratorAggregate
     public function toArray(): array
     {
         $array = [];
-        foreach ($this->manipulations as $manipulation) {
-            $array[$manipulation->name()] = $manipulation->toArray();
+        foreach ($this->variants as $variant) {
+            $array[$variant->name()] = $variant->toArray();
         }
 
         return $array;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return count($this->variants);
     }
 }

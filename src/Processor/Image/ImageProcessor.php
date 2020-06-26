@@ -49,14 +49,26 @@ class ImageProcessor implements ProcessorInterface
     /**
      * @var array
      */
-    protected array $processOnlyTheseVersions = [];
+    protected array $processOnlyTheseVariants = [];
 
+    /**
+     * @var \Phauthentic\Infrastructure\Storage\FileStorageInterface
+     */
     protected FileStorageInterface $storageHandler;
 
+    /**
+     * @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface
+     */
     protected PathBuilderInterface $pathBuilder;
 
+    /**
+     * @var \Intervention\Image\ImageManager
+     */
     protected ImageManager $imageManager;
 
+    /**
+     * @var \Intervention\Image\Image
+     */
     protected Image $image;
 
     /**
@@ -91,16 +103,17 @@ class ImageProcessor implements ProcessorInterface
      */
     protected function isApplicable(FileInterface $file): bool
     {
-        return in_array($file->mimeType(), $this->mimeTypes, true);
+        return $file->hasVariants()
+            && in_array($file->mimeType(), $this->mimeTypes, true);
     }
 
     /**
-     * @param array $manipulations Manipulations
+     * @param array $variants Variants by name
      * @return $this
      */
-    public function processOnlyTheseVersions(array $manipulations): self
+    public function processOnlyTheseVariants(array $variants): self
     {
-        $this->processOnlyTheseVersions = $manipulations;
+        $this->processOnlyTheseVariants = $variants;
 
         return $this;
     }
@@ -110,9 +123,38 @@ class ImageProcessor implements ProcessorInterface
      */
     public function processAll(): self
     {
-        $this->processOnlyTheseVersions = [];
+        $this->processOnlyTheseVariants = [];
 
         return $this;
+    }
+
+    /**
+     * Read the data from the files resource if (still) present,
+     * if not fetch it from the storage backend and write the data
+     * to the stream of the temp file
+     *
+     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
+     * @param resource $tempFileStream Temp File Stream Resource
+     * @return int|bool False on error
+     */
+    protected function copyOriginalFileData(FileInterface $file, $tempFileStream)
+    {
+        $stream = $file->resource();
+        $storage = $this->storageHandler->getStorage($file->storage());
+
+        if ($stream === null) {
+            $stream = $storage->readStream($file->path());
+            $stream = $stream['stream'];
+        } else {
+            rewind($stream);
+        }
+        $result = stream_copy_to_stream(
+            $stream,
+            $tempFileStream
+        );
+        fclose($tempFileStream);
+
+        return $result;
     }
 
     /**
@@ -124,32 +166,29 @@ class ImageProcessor implements ProcessorInterface
             return $file;
         }
 
+        $storage = $this->storageHandler->getStorage($file->storage());
+
         // Create a local tmp file on the processing system / machine
         $tempFile = TemporaryFile::create();
         $tempFileStream = fopen($tempFile, 'wb+');
 
-        // Get the file from the storage system and copy it to the temp file
-        $storage = $this->storageHandler->getStorage($file->storage());
-        $stream = $storage->readStream($file->path());
-        $result = stream_copy_to_stream(
-            $stream['stream'],
-            $tempFileStream
-        );
-        fclose($tempFileStream);
-        unset($tempFileStream);
+        // Read the data from the files resource if (still) present,
+        // if not fetch it from the storage backend and write the data
+        // to the stream of the temp file
+        $result = $this->copyOriginalFileData($file, $tempFileStream);
 
         // Stop if the temp file could not be generated
         if ($result === false) {
             throw TempFileCreationFailedException::withFilename($tempFile);
         }
 
-        // Iterate over the manipulations described as an array
-        foreach ($file->manipulations() as $manipulation => $data) {
+        // Iterate over the variants described as an array
+        foreach ($file->variants() as $variant => $data) {
             if (
                 empty($data['operations'])
                 || (
-                    !empty($this->processOnlyTheseVersions)
-                    && !in_array($manipulation, $this->processOnlyTheseVersions, true)
+                    !empty($this->processOnlyTheseVariants)
+                    && !in_array($variant, $this->processOnlyTheseVariants, true)
                 )
             ) {
                 continue;
@@ -166,7 +205,7 @@ class ImageProcessor implements ProcessorInterface
                 $this->$operation($arguments);
             }
 
-            $path = $this->pathBuilder->pathForManipulation($file, $manipulation);
+            $path = $this->pathBuilder->pathForVariant($file, $variant);
 
             if (isset($data['optimize']) && $data['optimize'] === true) {
                 $this->optimizeAndStore($file, $path);
@@ -179,7 +218,7 @@ class ImageProcessor implements ProcessorInterface
             }
 
             $data['path'] = $path;
-            $file = $file->withManipulation($manipulation, $data);
+            $file = $file->withVariant($variant, $data);
         }
 
         unlink($tempFile);
@@ -274,6 +313,30 @@ class ImageProcessor implements ProcessorInterface
         $y = $arguments['y'] ? (int)$arguments['y'] : null;
 
         $this->image->crop($width, $height, $x, $y);
+    }
+
+    /**
+     * Flips the image horizontal
+     *
+     * @link http://image.intervention.io/api/flip
+     * @param array $arguments Arguments
+     * @return void
+     */
+    protected function flipHorizontal(array $arguments): void
+    {
+        $this->flip(['direction' => 'h']);
+    }
+
+    /**
+     * Flips the image vertical
+     *
+     * @link http://image.intervention.io/api/flip
+     * @param array $arguments Arguments
+     * @return void
+     */
+    protected function flipVertical(array $arguments): void
+    {
+        $this->flip(['direction' => 'v']);
     }
 
     /**

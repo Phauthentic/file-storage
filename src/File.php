@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
-use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResource;
+use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use RuntimeException;
 
@@ -102,19 +102,19 @@ class File implements FileInterface
     /**
      * @var array
      */
-    protected array $manipulations = [];
+    protected array $variants = [];
 
     /**
      * Creates a new instance
      *
      * @param string $filename Filename
      * @param int $filesize Filesize
-     * @param string|null $mimeType Mime Type
+     * @param string $mimeType Mime Type
      * @param string $storage Storage config name
      * @param string|null $collection Collection name
      * @param string|null $model Model name
      * @param string|null $modelId Model id
-     * @param array $manipulations Manipulations
+     * @param array $variants Variants
      * @param array $metadata Meta data
      * @param resource|null $resource
      * @return self
@@ -122,13 +122,13 @@ class File implements FileInterface
     public static function create(
         string $filename,
         int $filesize,
-        ?string $mimeType,
+        string $mimeType,
         string $storage,
         ?string $collection = null,
         ?string $model = null,
         ?string $modelId = null,
-        array $manipulations = [],
         array $metadata = [],
+        array $variants = [],
         $resource = null
     ): self {
         $that = new self();
@@ -140,7 +140,7 @@ class File implements FileInterface
         $that->model = $model;
         $that->modelId = $modelId;
         $that->collection = $collection;
-        $that->manipulations = $manipulations;
+        $that->variants = $variants;
         $that->metadata = $metadata;
 
         if ($resource !== null) {
@@ -207,7 +207,7 @@ class File implements FileInterface
             !is_resource($resource)
             || get_resource_type($resource) !== 'stream'
         ) {
-            throw InvalidStreamResource::create();
+            throw InvalidStreamResourceException::create();
         }
     }
 
@@ -393,12 +393,6 @@ class File implements FileInterface
      */
     public function buildPath(PathBuilderInterface $pathBuilder): self
     {
-        if ($this->path !== null) {
-            throw new RuntimeException(
-                'This file has already a path'
-            );
-        }
-
         $that = clone $this;
         $that->path = $pathBuilder->path($this);
 
@@ -443,6 +437,17 @@ class File implements FileInterface
     }
 
     /**
+     * @return $this
+     */
+    public function withoutMetadata(): self
+    {
+        $that = clone $this;
+        $that->metadata = [];
+
+        return $that;
+    }
+
+    /**
      * @return array
      */
     public function metadata(): array
@@ -453,71 +458,71 @@ class File implements FileInterface
     /**
      * @return bool
      */
-    public function hasManipulations(): bool
+    public function hasVariants(): bool
     {
-        return !empty($this->manipulations);
+        return !empty($this->variants);
     }
 
     /**
      * @param string $name Name
      * @return bool
      */
-    public function hasManipulation(string $name): bool
+    public function hasVariant(string $name): bool
     {
-        return isset($this->manipulations[$name]);
+        return isset($this->variants[$name]);
     }
 
     /**
      * @return array
      */
-    public function manipulations(): array
+    public function variants(): array
     {
-        return $this->manipulations;
+        return $this->variants;
     }
 
     /**
-     * Returns a manipulation setting by name
+     * Returns a variant by name
      *
      * @param string $name Name
      * @return array
      */
-    public function manipulation(string $name): array
+    public function variant(string $name): array
     {
-        if (!isset($this->manipulations[$name])) {
+        if (!isset($this->variants[$name])) {
             throw new RuntimeException(
                 'Manipulation does not exist'
             );
         }
 
-        return $this->manipulations[$name];
+        return $this->variants[$name];
     }
 
     /**
-     * Adds a manipulation
+     * Adds a variant
      *
      * @param string $name Name
      * @param array $data Data
      * @return $this
      */
-    public function withManipulation(string $name, array $data): self
+    public function withVariant(string $name, array $data): self
     {
         $that = clone $this;
-        $that->manipulations[$name] = $data;
+        $that->variants[$name] = $data;
 
         return $that;
     }
 
     /**
-     * Gets the paths for all manipulations
+     * Gets the paths for all variants
      *
      * @return array
      */
-    public function manipulationPaths(): array
+    public function variantPaths(): array
     {
         $paths = [];
-        foreach ($this->manipulations as $manipulation => $data) {
+        foreach ($this->variants as $variant => $data) {
             if (isset($data['path'])) {
-                $paths[$manipulation] = $data['path'];
+                $paths[$variant] = $data['path'];
             }
         }
 
@@ -525,18 +530,18 @@ class File implements FileInterface
     }
 
     /**
-     * Sets many manipulations at once
+     * Sets many variants at once
      *
-     * @param array $manipulations Manipulations
-     * @param bool $merge Merge manipulations, default is true
+     * @param array $variants Variants
+     * @param bool $merge Merge Variants, default is true
      * @return $this
      */
-    public function withManipulations(array $manipulations, bool $merge = true): self
+    public function withVariants(array $variants, bool $merge = true): self
     {
         $that = clone $this;
-        $that->manipulations = array_merge_recursive(
-            $merge ? $that->manipulations : [],
-            $manipulations
+        $that->variants = array_merge_recursive(
+            $merge ? $that->variants : [],
+            $variants
         );
 
         return $that;
@@ -558,7 +563,7 @@ class File implements FileInterface
             'modelId' => $this->modelId,
             'collection' => $this->collection,
             'readableSize' => $this->readableSize(),
-            'manipulations' => $this->manipulations,
+            'variants' => $this->variants,
             'metaData' => $this->metadata,
         ];
     }

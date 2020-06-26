@@ -18,6 +18,7 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 
 use ErrorException;
 use finfo;
+use RuntimeException;
 
 /**
  * The original version of this file has been taken from league/flysystem
@@ -31,7 +32,7 @@ class MimeType
     /**
      * @var array
      */
-    protected static $extensionToMimeTypeMap = [
+    protected static array $extensionToMimeTypeMap = [
         'hqx' => 'application/mac-binhex40',
         'cpt' => 'application/mac-compactpro',
         'csv' => 'text/csv',
@@ -230,8 +231,8 @@ class MimeType
      */
     public static function byContent(string $content): ?string
     {
-        if (!is_string($content) || !class_exists('finfo')) {
-            return null;
+        if (!class_exists('finfo')) {
+            throw new RuntimeException('php extension fileinfo is missing');
         }
 
         try {

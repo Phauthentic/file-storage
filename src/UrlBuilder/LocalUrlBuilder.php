@@ -56,9 +56,13 @@ class LocalUrlBuilder implements UrlBuilderInterface
    /**
     * @inheritDoc
     */
-    public function urlForManipulation(FileInterface $file, string $manipulation): string
+    public function urlForVariant(FileInterface $file, string $variant): string
     {
-        return $this->buildBaseUrl() . $file->manipulations()[$manipulation]['url'];
+        if (!isset($file->variants()[$variant])) {
+            return '';
+        }
+
+        return $this->buildBaseUrl() . $file->variants()[$variant]['url'];
     }
 
     /**

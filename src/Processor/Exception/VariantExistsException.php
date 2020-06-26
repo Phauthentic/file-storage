@@ -14,15 +14,22 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Processor;
+namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
 
 /**
- * Manipulator Interface
+ * ManipulationExistsException
  */
-interface ManipulationInterface
+class VariantExistsException extends VariantException
 {
     /**
-     * @return string
+     * @param string $name Name
+     * @return self
      */
-    public function name(): string;
+    public static function withName(string $name): self
+    {
+        return new self(sprintf(
+            'A variant with the name `%s` already exists',
+            $name
+        ));
+    }
 }

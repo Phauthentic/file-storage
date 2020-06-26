@@ -14,17 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Exception;
+namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
+
+use RuntimeException;
 
 /**
- * Invalid Stream Resource
+ * ManipulationException
  */
-class InvalidStreamResource extends StorageException
+class VariantException extends RuntimeException
 {
-    public static function create(): self
-    {
-        return new self(
-            'The provided value is not a valid stream resource',
-        );
-    }
+
 }

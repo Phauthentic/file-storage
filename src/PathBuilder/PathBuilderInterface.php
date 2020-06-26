@@ -42,5 +42,5 @@ interface PathBuilderInterface
      * @param array $options
      * @return string
      */
-    public function pathForManipulation(FileInterface $file, string $name, array $options = []): string;
+    public function pathForVariant(FileInterface $file, string $name, array $options = []): string;
 }

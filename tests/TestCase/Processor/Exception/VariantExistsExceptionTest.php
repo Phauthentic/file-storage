@@ -16,23 +16,21 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase\Processor\Image\Exception;
 
-use Phauthentic\Infrastructure\Storage\Processor\Image\Exception\UnsupportedOperationException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantExistsException;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
- * UnsupportedOperationExceptionTest
+ * ManipulationExistsExceptionTest
  */
-class UnsupportedOperationExceptionTest extends TestCase
+class VariantExistsExceptionTest extends TestCase
 {
     /**
      * @return void
      */
     public function testException(): void
     {
-        $exception = UnsupportedOperationException::withName('resize');
-        $this->assertEquals(
-            'Operation `resize` is not implemented or supported',
-            $exception->getMessage()
-        );
+        $exception = VariantExistsException::withName('test');
+        $expected = 'A variant with the name `test` already exists';
+        $this->assertEquals($expected, $exception->getMessage());
     }
 }

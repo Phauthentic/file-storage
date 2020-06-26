@@ -15,6 +15,7 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "guzzlehttp/psr7": "^1.6",
         "phauthentic/file-storage-factories": "dev-master",
         "psr/http-message": "^1.0"
     },

@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Copyright (c) Florian Krämer (https://florian-kraemer.net)
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright (c) Florian Krämer (https://florian-kraemer.net)
+ * @author    Florian Krämer
+ * @link      https://github.com/Phauthentic
+ * @license   https://opensource.org/licenses/MIT MIT License
+ */
+
 declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase;
@@ -19,6 +31,8 @@ class FileStorageTest extends TestCase
      */
     public function testFileStorage(): void
     {
+        $ds = DIRECTORY_SEPARATOR;
+
         $fileStorage = new FileStorage(
             new StorageService(
                 new StorageAdapterFactory()
@@ -35,5 +49,7 @@ class FileStorageTest extends TestCase
         $file = $fileStorage->store($file);
 
         $this->assertNotEmpty($file->path());
+
+        $file = $fileStorage->remove($file);
     }
 }

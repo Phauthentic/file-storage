@@ -14,14 +14,15 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Processor\Image\Exception;
-
-use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
+namespace Phauthentic\Infrastructure\Storage\Processor;
 
 /**
- * ImageProcessingException
+ * Manipulator Interface
  */
-class ImageProcessingException extends VariantException
+interface VariantInterface
 {
-
+    /**
+     * @return string
+     */
+    public function name(): string;
 }

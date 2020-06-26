@@ -6,7 +6,7 @@ The dependencies have been selected based on the code quality and amount of furt
 
 ## league/flysystem
 
-The underlying storage abstraction but it's possible to replace it if you really want.
+The underlying storage abstraction library.
 
 ## intervention/image - optional
 
