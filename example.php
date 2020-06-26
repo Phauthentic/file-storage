@@ -8,7 +8,7 @@ use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageProcessor;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulationCollection;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariantCollection;
 use Phauthentic\Infrastructure\Storage\FileStorage;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
 use Phauthentic\Infrastructure\Storage\StorageService;
@@ -108,7 +108,7 @@ echo PHP_EOL . PHP_EOL;
  * Creating manipulated versions of the file
  ******************************************************************************/
 
-$collection = ImageManipulationCollection::create();
+$collection = ImageVariantCollection::create();
 $collection->addNew('resizeAndFlip')
     ->flipHorizontal()
     ->resize(300, 300)
@@ -116,7 +116,7 @@ $collection->addNew('resizeAndFlip')
 $collection->addNew('crop')
     ->crop(100, 100);
 
-$file = $file->withManipulations($collection->toArray());
+$file = $file->withVariants($collection->toArray());
 
 $file = $imageProcessor
     ->processOnlyTheseVersions([

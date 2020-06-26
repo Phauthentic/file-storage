@@ -21,6 +21,7 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+use RuntimeException;
 
 /**
  * File Storage Service
@@ -106,33 +107,36 @@ class FileStorage implements FileStorageInterface
         $file = $this->runCallbacks('beforeRemove', $file);
 
         $this->getStorage($file->storage())->delete($file->path());
-        foreach ($file->manipulations() as $manipulation) {
-            if (!empty($manipulation['path'])) {
-                $this->getStorage($file->storage())->delete($manipulation['path']);
+        foreach ($file->variants() as $variant) {
+            if (!empty($variant['path'])) {
+                $this->getStorage($file->storage())->delete($variant['path']);
             }
         }
 
         return $this->runCallbacks('afterRemove', $file);
     }
 
-    public function removeManipulation(FileInterface $file, string $name): FileInterface
+    /**
+     * @inheritDoc
+     */
+    public function removeVariant(FileInterface $file, string $name): FileInterface
     {
-        if (!$file->hasManipulations()) {
-            throw new \RuntimeException(sprintf(
+        if (!$file->hasVariants()) {
+            throw new RuntimeException(sprintf(
                 'Manipulation `%s` does not exist',
                 $name
             ));
         }
 
-        $manipulation = $file->manipulation($name);
-        if (!empty($manipulation['path'])) {
-            $this->getStorage($file->storage())->delete($manipulation['path']);
+        $variant = $file->variant($name);
+        if (!empty($variant['path'])) {
+            $this->getStorage($file->storage())->delete($variant['path']);
         }
 
-        $manipulations = $file->manipulations();
-        unset($manipulations[$name]);
+        $variants = $file->variants();
+        unset($variants[$name]);
 
-        return $file->withManipulations($manipulations, false);
+        return $file->withVariants($variants, false);
     }
 
     /**

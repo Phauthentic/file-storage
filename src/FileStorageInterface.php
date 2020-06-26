@@ -41,6 +41,13 @@ interface FileStorageInterface
     public function remove(FileInterface $file): FileInterface;
 
     /**
+     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
+     * @param string $name Name
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     */
+    public function removeVariant(FileInterface $file, string $name): FileInterface;
+
+    /**
      * Gets the storage abstraction to use
      *
      * @param string $storage Storage name to use

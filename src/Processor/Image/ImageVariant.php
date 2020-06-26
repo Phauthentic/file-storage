@@ -17,12 +17,12 @@ declare(strict_types=1);
 namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 
 use InvalidArgumentException;
-use Phauthentic\Infrastructure\Storage\Processor\Manipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Variant;
 
 /**
  * Image Manipulation
  */
-class ImageManipulation extends Manipulation
+class ImageVariant extends Variant
 {
     protected string $name;
     protected array $operations;

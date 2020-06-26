@@ -6,18 +6,18 @@ The whole library is build with clear Separation of Concerns (SoC) in mind: A fi
 
 ## The file object
 
-The *File* object is the central object in this library around which all functionality has being built. The file object contains all information needed to store and retrieve the file later from a storage backend. It also has methods to add manipulations to the file that are checked and applied by a *Processor*. This can be image or video processing for example in the most common cases.
+The *File* object is the central object in this library around which all functionality has being built. The file object contains all information needed to store and retrieve the file later from a storage backend. It also has methods to add variants to the file that are checked and applied by a *Processor*. This can be image or video processing for example in the most common cases.
 
 The file object is serializable to json, and you can call `toArray()` on it to turn it into an array that you can either save in the structure you get or continue transforming it into whatever structure your persistence layer expects.
 
-You'll have to reconstruct the file object later from your persisted information when you want to come back to it later and work with new manipulations for example. Depending on your architecture, your domain model could also simply implement the `FileInterface` if this is more convenient for your.
+You'll have to reconstruct the file object later from your persisted information when you want to come back to it later and work with new variants for example. Depending on your architecture, your domain model could also simply implement the `FileInterface` if this is more convenient for your.
 
 ## Workflow
 
  * Create file object.
    * Add a resource handle of a file to it (if it is a new file).
  * Store file using the file storage service.
- * Use a processor to apply manipulations to the file.
+ * Use a processor to apply variants to the file.
  * Read file and manipulated files from the backend using the FileStorageService.
 
 The processors can be instantiated and used alone without further dependencies on the service. This enables you to use them very easy in your applications shell for example.

@@ -4,7 +4,7 @@ Path builders are used to generate the path the file gets stored under in the st
 
 ## Default Path Builder
 
-The library comes with a pretty powerful path builder that allows you to build the path you want from a lot of variables that can be put together in a string template for the files path and manipulations of the file.
+The library comes with a pretty powerful path builder that allows you to build the path you want from a lot of variables that can be put together in a string template for the files path and variants of the file.
 
 ```
 $builder = new PathBuilder([
@@ -19,7 +19,7 @@ $builder = new PathBuilder([
  * **beautifyFilename**: false
  * **sanitizer**: null
  * **pathTemplate**: '{model}{ds}{randomPath}{ds}{id}'
- * **manipulationTemplate**: '{filename}.{manipulation}.{extension}'
+ * **variantPathTemplate**: '{filename}.{variant}.{extension}'
 
 ### Path Template Placeholders
 
@@ -43,8 +43,8 @@ For example this template string
 
 The following placeholders are only valid when used in a path for a manipulated file.
 
- * **{manipulation}**: The name of the manipulation
- * **{hashedManipulation}**: A hashed and to six chars truncated version of the manipulation name.
+ * **{variant}**: The name of the variant
+ * **{hashedVariant}**: A hashed and to six chars truncated version of the manipulation name.
 
 ## Conditional Path Builder
 

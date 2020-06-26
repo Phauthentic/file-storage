@@ -17,21 +17,21 @@ declare(strict_types=1);
 namespace Phauthentic\Test\TestCase\Processor\Image;
 
 use ArrayIterator;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulationCollection;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariantCollection;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
- * Image Manipulation Collection
+ * ImageVariantCollectionTest
  */
-class ImageManipulationCollectionTest extends TestCase
+class ImageVariantCollectionTest extends TestCase
 {
     /**
      * @return void
      */
     public function testCollectionSetAndGet(): void
     {
-        $collection = ImageManipulationCollection::create();
+        $collection = ImageVariantCollection::create();
         $this->assertCount(0, $collection);
 
         $collection
@@ -40,7 +40,7 @@ class ImageManipulationCollectionTest extends TestCase
             ->optimize();
 
         $this->assertCount(1, $collection);
-        $this->assertInstanceOf(ImageManipulation::class, $collection->get('flipHorizontal'));
+        $this->assertInstanceOf(ImageVariant::class, $collection->get('flipHorizontal'));
     }
 
     /**
@@ -48,7 +48,7 @@ class ImageManipulationCollectionTest extends TestCase
      */
     public function testCollection(): void
     {
-        $collection = ImageManipulationCollection::create();
+        $collection = ImageVariantCollection::create();
         $collection
             ->addNew('resizeAndFlip')
             ->flipHorizontal()
@@ -87,7 +87,7 @@ class ImageManipulationCollectionTest extends TestCase
 
         $this->assertEquals($expected, $collection->toArray());
 
-        $collection2 = ImageManipulationCollection::fromArray($expected);
+        $collection2 = ImageVariantCollection::fromArray($expected);
         $this->assertEquals($expected, $collection2->toArray());
 
         $this->assertTrue($collection2->has('resizeAndFlip'));

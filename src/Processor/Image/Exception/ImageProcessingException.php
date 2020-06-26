@@ -16,12 +16,12 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage\Processor\Image\Exception;
 
-use Phauthentic\Infrastructure\Storage\Processor\Exception\ManipulationException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 
 /**
  * ImageProcessingException
  */
-class ImageProcessingException extends ManipulationException
+class ImageProcessingException extends VariantException
 {
 
 }

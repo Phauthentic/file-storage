@@ -49,7 +49,7 @@ class ImageProcessor implements ProcessorInterface
     /**
      * @var array
      */
-    protected array $processOnlyTheseVersions = [];
+    protected array $processOnlyTheseVariants = [];
 
     /**
      * @var \Phauthentic\Infrastructure\Storage\FileStorageInterface
@@ -103,16 +103,17 @@ class ImageProcessor implements ProcessorInterface
      */
     protected function isApplicable(FileInterface $file): bool
     {
-        return in_array($file->mimeType(), $this->mimeTypes, true);
+        return $file->hasVariants()
+            && in_array($file->mimeType(), $this->mimeTypes, true);
     }
 
     /**
-     * @param array $manipulations Manipulations
+     * @param array $variants Variants by name
      * @return $this
      */
-    public function processOnlyTheseVersions(array $manipulations): self
+    public function processOnlyTheseVariants(array $variants): self
     {
-        $this->processOnlyTheseVersions = $manipulations;
+        $this->processOnlyTheseVariants = $variants;
 
         return $this;
     }
@@ -122,7 +123,7 @@ class ImageProcessor implements ProcessorInterface
      */
     public function processAll(): self
     {
-        $this->processOnlyTheseVersions = [];
+        $this->processOnlyTheseVariants = [];
 
         return $this;
     }
@@ -181,13 +182,13 @@ class ImageProcessor implements ProcessorInterface
             throw TempFileCreationFailedException::withFilename($tempFile);
         }
 
-        // Iterate over the manipulations described as an array
-        foreach ($file->manipulations() as $manipulation => $data) {
+        // Iterate over the variants described as an array
+        foreach ($file->variants() as $variant => $data) {
             if (
                 empty($data['operations'])
                 || (
-                    !empty($this->processOnlyTheseVersions)
-                    && !in_array($manipulation, $this->processOnlyTheseVersions, true)
+                    !empty($this->processOnlyTheseVariants)
+                    && !in_array($variant, $this->processOnlyTheseVariants, true)
                 )
             ) {
                 continue;
@@ -204,7 +205,7 @@ class ImageProcessor implements ProcessorInterface
                 $this->$operation($arguments);
             }
 
-            $path = $this->pathBuilder->pathForManipulation($file, $manipulation);
+            $path = $this->pathBuilder->pathForVariant($file, $variant);
 
             if (isset($data['optimize']) && $data['optimize'] === true) {
                 $this->optimizeAndStore($file, $path);
@@ -217,7 +218,7 @@ class ImageProcessor implements ProcessorInterface
             }
 
             $data['path'] = $path;
-            $file = $file->withManipulation($manipulation, $data);
+            $file = $file->withVariant($variant, $data);
         }
 
         unlink($tempFile);

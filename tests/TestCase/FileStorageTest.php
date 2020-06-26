@@ -31,6 +31,8 @@ class FileStorageTest extends TestCase
      */
     public function testFileStorage(): void
     {
+        $ds = DIRECTORY_SEPARATOR;
+
         $fileStorage = new FileStorage(
             new StorageService(
                 new StorageAdapterFactory()
@@ -47,5 +49,7 @@ class FileStorageTest extends TestCase
         $file = $fileStorage->store($file);
 
         $this->assertNotEmpty($file->path());
+
+        $file = $fileStorage->remove($file);
     }
 }

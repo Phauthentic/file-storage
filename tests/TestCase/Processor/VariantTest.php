@@ -16,29 +16,29 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase\Processor;
 
-use Phauthentic\Infrastructure\Storage\Processor\Manipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Variant;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
- * ManipulationTest
+ * VariantTest
  */
-class ManipulationTest extends TestCase
+class VariantTest extends TestCase
 {
     /**
      * @return void
      */
-    public function testManipulation(): void
+    public function testVariant(): void
     {
-        $manipulation = (new class() extends Manipulation {
+        $variant = (new class () extends Variant {
             protected string $name = 'test';
         });
 
-        $this->assertEquals('test', $manipulation->name());
-        $this->assertEquals('', $manipulation->path());
+        $this->assertEquals('test', $variant->name());
+        $this->assertEquals('', $variant->path());
 
-        $manipulation = $manipulation->withPath('/');
-        $this->assertEquals('/', $manipulation->path());
-        $this->assertFalse($manipulation->hasOperations());
+        $variant = $variant->withPath('/');
+        $this->assertEquals('/', $variant->path());
+        $this->assertFalse($variant->hasOperations());
 
         $expected = [
             'operations' => [],
@@ -46,7 +46,7 @@ class ManipulationTest extends TestCase
             'url' => '',
             'name' => 'test'
         ];
-        $result = $manipulation->toArray();
+        $result = $variant->toArray();
 
         $this->assertEquals($expected, $result);
     }

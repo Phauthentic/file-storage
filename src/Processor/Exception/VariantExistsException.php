@@ -19,7 +19,7 @@ namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
 /**
  * ManipulationExistsException
  */
-class ManipulationExistsException extends ManipulationException
+class VariantExistsException extends VariantException
 {
     /**
      * @param string $name Name
@@ -28,7 +28,7 @@ class ManipulationExistsException extends ManipulationException
     public static function withName(string $name): self
     {
         return new self(sprintf(
-            'A manipulation with the name `%s` already exists',
+            'A variant with the name `%s` already exists',
             $name
         ));
     }

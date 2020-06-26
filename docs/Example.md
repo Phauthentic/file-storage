@@ -9,7 +9,7 @@ use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageProcessor;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant;
 use Phauthentic\Infrastructure\Storage\FileStorage;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
 use Phauthentic\Infrastructure\Storage\StorageService;
@@ -78,23 +78,23 @@ $file = FileFactory::fromDisk('./tests/Fixtures/titus.jpg', 'local')
 $file = $fileStorage->store($file);
 
 /*******************************************************************************
- * Creating manipulated versions of the file
+ * Creating variants of the file
  ******************************************************************************/
 
-$file = $file->withManipulations([
-    'resizeAndFlip' => ImageManipulation::create('resizeAndFlip')
+$file = $file->withVariants([
+    'resizeAndFlip' => ImageVariant::create('resizeAndFlip')
         ->flipHorizontal()
         ->resize(300, 300)
         ->optimize()
         ->toArray(),
-    'crop' => ImageManipulation::create('crop')
+    'crop' => ImageVariant::create('crop')
         ->crop(100, 100)
         ->toArray()
 ]);
 
 $file = $imageManipulator
     // You can limit the versions you want to process
-    ->processOnlyTheseVersions([
+    ->processOnlyTheseVariants([
         'resizeAndFlip'
     ])
     ->process($file);

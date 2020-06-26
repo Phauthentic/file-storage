@@ -16,32 +16,32 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase\Processor\Image;
 
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulation;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariant;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
- * Image Manipulation Collection
+ * ImageVariantTest
  */
-class ImageManipulationTest extends TestCase
+class ImageVariantTest extends TestCase
 {
     /**
      * @return void
      */
-    public function testManipulation(): void
+    public function testVariant(): void
     {
-        $manipulation = ImageManipulation::create('resize')
+        $variant = ImageVariant::create('resize')
             ->resize(200, 200)
             ->flipHorizontal()
             ->flipVertical()
-            ->flip(ImageManipulation::FLIP_VERTICAL)
+            ->flip(ImageVariant::FLIP_VERTICAL)
             ->optimize();
 
-        $this->assertEquals('resize', $manipulation->name());
-        $this->assertEquals('', $manipulation->path());
+        $this->assertEquals('resize', $variant->name());
+        $this->assertEquals('', $variant->path());
 
-        $manipulation = $manipulation->withPath('/');
-        $this->assertEquals('/', $manipulation->path());
-        $this->assertTrue($manipulation->hasOperations());
+        $variant = $variant->withPath('/');
+        $this->assertEquals('/', $variant->path());
+        $this->assertTrue($variant->hasOperations());
 
         $expected = [
             'operations' => [
@@ -65,7 +65,7 @@ class ImageManipulationTest extends TestCase
             'url' => '',
             'optimize' => true
         ];
-        $result = $manipulation->toArray();
+        $result = $variant->toArray();
 
         $this->assertEquals($expected, $result);
     }

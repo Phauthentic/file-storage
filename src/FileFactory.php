@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
+use GuzzleHttp\Psr7\StreamWrapper;
 use Phauthentic\Infrastructure\Storage\Exception\FileDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Exception\FileNotReadableException;
 use Phauthentic\Infrastructure\Storage\Utility\MimeType;
 use Phauthentic\Infrastructure\Storage\Utility\PathInfo;
-use Phauthentic\Infrastructure\Storage\Utility\Psr7StreamWrapper;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -47,21 +47,8 @@ class FileFactory implements FileFactoryInterface
         );
 
         return $file->withResource(
-            Psr7StreamWrapper::getResource($uploadedFile->getStream())
+            StreamWrapper::getResource($uploadedFile->getStream())
         );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public static function fromUploadedFiles(ServerRequestInterface $request, string $storage): array
-    {
-        $files = [];
-        foreach ($request->getUploadedFiles() as $uploadedFile) {
-            $files[] = static::fromUploadedFile($uploadedFile, $storage);
-        }
-
-        return $files;
     }
 
     /**
@@ -76,7 +63,7 @@ class FileFactory implements FileFactoryInterface
         $mimeType = MimeType::byExtension($info->extension());
 
         $file = File::create(
-            basename($path),
+            $info->basename(),
             $filesize,
             $mimeType,
             $storage,

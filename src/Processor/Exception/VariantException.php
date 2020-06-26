@@ -14,15 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Processor;
+namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
+
+use RuntimeException;
 
 /**
- * Manipulator Interface
+ * ManipulationException
  */
-interface ManipulationInterface
+class VariantException extends RuntimeException
 {
-    /**
-     * @return string
-     */
-    public function name(): string;
+
 }

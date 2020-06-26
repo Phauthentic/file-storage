@@ -96,40 +96,48 @@ interface FileInterface extends JsonSerializable
     public function addToCollection(string $collection): self;
 
     /**
-     * Manipulation
+     * Get a variant
      *
      * @param string $name
      * @return array
      */
-    public function manipulation(string $name): array;
+    public function variant(string $name): array;
 
     /**
-     * Array data structure of the manipulations
+     * Array data structure of the variants
      *
      * @return array
      */
-    public function manipulations(): ?array;
+    public function variants(): ?array;
 
     /**
-     * Checks if the file has any manipulations configure
+     * Checks if the file has a specific variant
      *
+     * @param string $name
      * @return bool
      */
-    public function hasManipulations(): bool;
+    public function hasVariant(string $name): bool;
 
     /**
      * @param string $name Name
      * @param array $data Data
      * @return $this
      */
-    public function withManipulation(string $name, array $data): self;
+    public function withVariant(string $name, array $data): self;
 
     /**
-     * @param array $manipulations Manipulations
-     * @param bool $merge Merge manipulations, default is false
+     * @param array $variants Variants
+     * @param bool $merge Merge variants, default is false
      * @return $this
      */
-    public function withManipulations(array $manipulations, bool $merge = true): self;
+    public function withVariants(array $variants, bool $merge = true): self;
+
+    /**
+     * Gets the paths for all variants
+     *
+     * @return array
+     */
+    public function variantPaths(): array;
 
     /**
      * Returns an array of the file data
@@ -147,6 +155,13 @@ interface FileInterface extends JsonSerializable
     public function withMetadata(array $metadata): self;
 
     /**
+     * Removes all metadata
+     *
+     * @return static
+     */
+    public function withoutMetadata(): self;
+
+    /**
      * Adds a single key and value to the metadata array
      *
      * @param string $key Key
@@ -154,6 +169,13 @@ interface FileInterface extends JsonSerializable
      * @return self
      */
     public function withMetadataKey(string $key, $data): self;
+
+    /**
+     * Removes a key from the metadata array
+     * @param string $name Name
+     * @return $this
+     */
+    public function withoutMetadataKey(string $name): self;
 
     /**
      * Stream resource of the file to be stored

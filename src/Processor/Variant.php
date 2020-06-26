@@ -19,7 +19,7 @@ namespace Phauthentic\Infrastructure\Storage\Processor;
 /**
  * Manipulation
  */
-class Manipulation implements ManipulationInterface
+class Variant implements VariantInterface
 {
     protected string $name = '';
     protected array $operations = [];

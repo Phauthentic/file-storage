@@ -18,7 +18,7 @@ namespace Phauthentic\Test\TestCase\PathBuilder;
 
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
-use Phauthentic\Infrastructure\Storage\Processor\Image\ImageManipulationCollection;
+use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariantCollection;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
@@ -46,7 +46,7 @@ class PathBuilderTest extends TestCase
      */
     public function testBuilder(): void
     {
-        $collection = ImageManipulationCollection::create();
+        $collection = ImageVariantCollection::create();
         $collection
             ->addNew('resizeAndFlip')
             ->flipHorizontal()
@@ -58,7 +58,7 @@ class PathBuilderTest extends TestCase
             ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
             ->addToCollection('avatar')
             ->belongsToModel('User', '1')
-            ->withManipulations($collection->toArray());
+            ->withVariants($collection->toArray());
 
         $builder = new PathBuilder();
 
@@ -68,7 +68,7 @@ class PathBuilderTest extends TestCase
             $result
         );
 
-        $result = $builder->pathForManipulation($file, 'resizeAndFlip');
+        $result = $builder->pathForVariant($file, 'resizeAndFlip');
         $this->assertEquals(
             $this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.7ae239.jpg'),
             $result

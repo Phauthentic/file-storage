@@ -78,14 +78,14 @@ class ConditionalPathBuilder implements PathBuilderInterface
     /**
      * @inheritDoc
      */
-    public function pathForManipulation(FileInterface $file, string $name, array $options = []): string
+    public function pathForVariant(FileInterface $file, string $name, array $options = []): string
     {
         foreach ($this->pathBuilders as $builder) {
             if ($builder['callable']($file)) {
-                return $builder['pathBuilder']->pathForManipulation($file, $name, $options);
+                return $builder['pathBuilder']->pathForVariant($file, $name, $options);
             }
         }
 
-        return $this->defaultPathBuilder->pathForManipulation($file, $name, $options);
+        return $this->defaultPathBuilder->pathForVariant($file, $name, $options);
     }
 }
