@@ -119,6 +119,13 @@ interface FileInterface extends JsonSerializable
     public function hasVariant(string $name): bool;
 
     /**
+     * Checks if the file has any variants
+     *
+     * @return bool
+     */
+    public function hasVariants(): bool;
+
+    /**
      * @param string $name Name
      * @param array $data Data
      * @return $this

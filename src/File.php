@@ -109,12 +109,12 @@ class File implements FileInterface
      *
      * @param string $filename Filename
      * @param int $filesize Filesize
-     * @param string|null $mimeType Mime Type
+     * @param string $mimeType Mime Type
      * @param string $storage Storage config name
      * @param string|null $collection Collection name
      * @param string|null $model Model name
      * @param string|null $modelId Model id
-     * @param array variants Variants
+     * @param array $variants Variants
      * @param array $metadata Meta data
      * @param resource|null $resource
      * @return self
@@ -437,7 +437,6 @@ class File implements FileInterface
     }
 
     /**
-     * @param string $name Name
      * @return $this
      */
     public function withoutMetadata(): self

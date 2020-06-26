@@ -119,7 +119,7 @@ $collection->addNew('crop')
 $file = $file->withVariants($collection->toArray());
 
 $file = $imageProcessor
-    ->processOnlyTheseVersions([
+    ->processOnlyTheseVariants([
         //'resizeAndFlip'
     ])
     ->process($file);
