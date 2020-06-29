@@ -45,12 +45,6 @@
             "Phauthentic\\Test\\": "tests"
         }
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:phauthentic/file-storage-factories.git"
-        }
-    ],
     "scripts": {
         "post-install-cmd": [
             "php config/composer_post_install.php"

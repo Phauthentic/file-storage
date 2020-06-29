@@ -1,4 +1,7 @@
 language: php
 php:
   - '7.4'
-before_script
+
+script:
+  - sh ./config/scrutinizer-setup.sh
+  - sh ./bin/phpunit --verbose --coverage-clover=clover.xml
