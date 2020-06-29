@@ -11,7 +11,6 @@ composer self-update
 composer --version
 composer global require hirak/prestissimo --no-plugins
 composer install --prefer-dist --no-interaction
-npm install yarn -g
 chmod -R +x ./bin
 sudo mkdir tmp
 sudo chmod -R 777 ./tmp
