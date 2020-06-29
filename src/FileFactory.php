@@ -76,7 +76,7 @@ class FileFactory implements FileFactoryInterface
             ));
         }
 
-        return $file->withResource();
+        return $file->withResource($result);
     }
 
     /**
