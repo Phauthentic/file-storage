@@ -13,6 +13,6 @@ composer global require hirak/prestissimo --no-plugins
 composer install --prefer-dist --no-interaction
 npm install yarn -g
 chmod -R +x ./bin
-mkdir tmp
-chmod -R 777 ./tmp
+sudo mkdir tmp
+sudo chmod -R 777 ./tmp
 
