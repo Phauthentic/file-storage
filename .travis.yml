@@ -5,4 +5,5 @@ before_script:
   - sudo sh ./config/scrutinizer-setup.sh
 
 script:
-  - /bin/phpunit --verbose --coverage-clover=clover.xml
+  - sudo chmod +x ./bin/phpunit
+  - sudo sh ./bin/phpunit --verbose --coverage-clover=clover.xml
