@@ -37,6 +37,7 @@ build:
             ini:
                 phar.readonly: 'Off'
 
+    nodes:
         tests-php74:
             environment:
                 php:
