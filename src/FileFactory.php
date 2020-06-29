@@ -21,7 +21,6 @@ use Phauthentic\Infrastructure\Storage\Exception\FileDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Exception\FileNotReadableException;
 use Phauthentic\Infrastructure\Storage\Utility\MimeType;
 use Phauthentic\Infrastructure\Storage\Utility\PathInfo;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
@@ -40,9 +39,9 @@ class FileFactory implements FileFactoryInterface
         static::checkUploadedFile($uploadedFile);
 
         $file = File::create(
-            $uploadedFile->getClientFilename(),
-            $uploadedFile->getSize(),
-            $uploadedFile->getClientMediaType(),
+            (string)$uploadedFile->getClientFilename(),
+            (int)$uploadedFile->getSize(),
+            (string)$uploadedFile->getClientMediaType(),
             $storage
         );
 
@@ -69,7 +68,15 @@ class FileFactory implements FileFactoryInterface
             $storage,
         );
 
-        return $file->withResource(fopen($path, 'rb'));
+        $result = fopen($path, 'rb');
+        if ($result === false) {
+            throw new RuntimeException(sprintf(
+                'Failed to open file `%s for reading`',
+                $path
+            ));
+        }
+
+        return $file->withResource();
     }
 
     /**

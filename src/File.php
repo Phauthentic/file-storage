@@ -50,7 +50,7 @@ class File implements FileInterface
     /**
      * @var string
      */
-    protected ?string $mimeType = null;
+    protected string $mimeType = '';
 
     /**
      * @var string|null
@@ -195,6 +195,14 @@ class File implements FileInterface
      */
     public function withFile(string $file): self
     {
+        $result = fopen($file, 'rb');
+        if ($result === false) {
+            throw new RuntimeException(sprintf(
+                'Failed to open file `%s for reading`',
+                $file
+            ));
+        }
+
         return $this->withResource(fopen($file, 'rb'));
     }
 
