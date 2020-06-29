@@ -3,3 +3,6 @@ php:
   - '7.4'
 before_script:
   - sudo sh ./config/scrutinizer-setup.sh
+
+script:
+  - vendor/bin/phpunit --verbose --coverage-clover=clover.xml
