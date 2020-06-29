@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase;
 
+use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileStorage;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
@@ -33,11 +34,19 @@ class FileStorageTest extends TestCase
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $fileStorage = new FileStorage(
-            new StorageService(
-                new StorageAdapterFactory()
-            )
+        $storageService = new StorageService(
+            new StorageAdapterFactory()
         );
+
+        $storageService->loadAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage1' . $ds
+                ]
+            ],
+        ]);
+        $fileStorage = new FileStorage($storageService);
 
         $fileOnDisk = $this->getFixtureFile('titus.jpg');
 
