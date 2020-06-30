@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) Florian Krämer (https://florian-kraemer.net)
  * Licensed under The MIT License
@@ -23,7 +24,11 @@ use RuntimeException;
  */
 function fopen(string $filename, string $mode, bool $useIncludePath = true, $context = null)
 {
-    $result = \fopen($filename, $mode, $useIncludePath);
+    if (is_resource($context)) {
+        $result = \fopen($filename, $mode, $useIncludePath, $context);
+    } else {
+        $result = \fopen($filename, $mode, $useIncludePath);
+    }
 
     if ($result === false) {
         throw new RuntimeException(sprintf(
