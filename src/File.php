@@ -20,8 +20,6 @@ use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use RuntimeException;
 
-use function pathinfo;
-
 /**
  * File
  */
@@ -195,15 +193,9 @@ class File implements FileInterface
      */
     public function withFile(string $file): self
     {
-        $result = fopen($file, 'rb');
-        if ($result === false) {
-            throw new RuntimeException(sprintf(
-                'Failed to open file `%s for reading`',
-                $file
-            ));
-        }
+        $resource = fopen($file, 'rb');
 
-        return $this->withResource(fopen($file, 'rb'));
+        return $this->withResource($resource);
     }
 
     /**

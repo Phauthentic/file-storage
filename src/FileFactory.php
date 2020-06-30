@@ -68,15 +68,9 @@ class FileFactory implements FileFactoryInterface
             $storage,
         );
 
-        $result = fopen($path, 'rb');
-        if ($result === false) {
-            throw new RuntimeException(sprintf(
-                'Failed to open file `%s for reading`',
-                $path
-            ));
-        }
+        $resource = fopen($path, 'rb');
 
-        return $file->withResource($result);
+        return $file->withResource($resource);
     }
 
     /**

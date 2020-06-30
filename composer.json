@@ -38,7 +38,10 @@
     "autoload": {
         "psr-4": {
             "Phauthentic\\Infrastructure\\Storage\\": "src"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
