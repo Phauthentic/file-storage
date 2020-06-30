@@ -19,6 +19,7 @@ namespace Phauthentic\Infrastructure\Storage;
 use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * File
@@ -141,8 +142,12 @@ class File implements FileInterface
         $that->variants = $variants;
         $that->metadata = $metadata;
 
-        if ($resource !== null) {
+        if (is_resource($resource)) {
             $that = $that->withResource($resource);
+        } elseif ($resource !== null) {
+            throw new InvalidArgumentException(sprintf(
+               'The $resource argument is not a valid resource'
+            ));
         }
 
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
@@ -490,7 +495,8 @@ class File implements FileInterface
     {
         if (!isset($this->variants[$name])) {
             throw new RuntimeException(
-                'Manipulation does not exist'
+                'Variant %s does not exist',
+                $name
             );
         }
 
