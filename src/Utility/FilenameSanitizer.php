@@ -95,6 +95,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
      */
     protected function replaceCharacters(string $filename, string $replacement = '-'): string
     {
+        $regex = [];
         $regex[] = $this->filesystemReservedChars;
         $regex[] = $this->config['urlSafe'] === true ? $this->urlUnsafeChars : '';
         $regex[] = $this->config['removeUriReservedChars'] === true ? $this->uriReservedChars : '';

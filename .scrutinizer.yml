@@ -36,24 +36,8 @@ build:
             version: '7.4'
             ini:
                 phar.readonly: 'Off'
-        #elasticsearch: '6'
 
     nodes:
-        tests-php73:
-            environment:
-                php:
-                    version: '7.3'
-                    ini:
-                        phar.readonly: 'Off'
-            tests:
-                override:
-                - sh ./config/ci-setup.sh
-                -
-                    command: './bin/phpunit --coverage-clover=coverage.xml --bootstrap ./tests/bootstrap.php'
-                    coverage:
-                        file: 'coverage.xml'
-                        format: 'php-clover'
-
         tests-php74:
             environment:
                 php:
@@ -62,7 +46,7 @@ build:
                         phar.readonly: 'Off'
             tests:
                 override:
-                - sh ./config/ci-setup.sh
+                - sh ./config/scrutinizer-setup.sh
                 -
                     command: './bin/phpunit --coverage-clover=coverage.xml --bootstrap ./tests/bootstrap.php'
                     coverage:

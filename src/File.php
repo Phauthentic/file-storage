@@ -18,9 +18,8 @@ namespace Phauthentic\Infrastructure\Storage;
 
 use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 use RuntimeException;
-
-use function pathinfo;
 
 /**
  * File
@@ -50,7 +49,7 @@ class File implements FileInterface
     /**
      * @var string
      */
-    protected ?string $mimeType = null;
+    protected string $mimeType = '';
 
     /**
      * @var string|null
@@ -195,7 +194,9 @@ class File implements FileInterface
      */
     public function withFile(string $file): self
     {
-        return $this->withResource(fopen($file, 'rb'));
+        $resource = fopen($file, 'rb');
+
+        return $this->withResource($resource);
     }
 
     /**
@@ -214,7 +215,7 @@ class File implements FileInterface
     /**
      * Stream resource of the file to be stored
      *
-     * @param resource  $resource
+     * @param resource $resource Stream Resource
      * @return self
      */
     public function withResource($resource): self
@@ -489,9 +490,10 @@ class File implements FileInterface
     public function variant(string $name): array
     {
         if (!isset($this->variants[$name])) {
-            throw new RuntimeException(
-                'Manipulation does not exist'
-            );
+            throw new VariantException(sprintf(
+                'Variant %s does not exist',
+                $name
+            ));
         }
 
         return $this->variants[$name];

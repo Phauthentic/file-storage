@@ -56,10 +56,10 @@ class TestCase extends PhpUnitTestCase
     public function cleanUpFiles(): void
     {
         if (is_dir($this->storageRoot . 'storage1')) {
-            //$this->rrmdir($this->storageRoot . 'storage1');
+            $this->rrmdir($this->storageRoot . 'storage1');
         }
         if (is_dir($this->storageRoot . 'storage2')) {
-            //$this->rrmdir($this->storageRoot . 'storage2');
+            $this->rrmdir($this->storageRoot . 'storage2');
         }
     }
 
