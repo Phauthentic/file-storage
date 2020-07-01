@@ -24,7 +24,7 @@ use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use RuntimeException;
 
 /**
- * File Storage Service
+ * File Storage
  */
 class FileStorage implements FileStorageInterface
 {

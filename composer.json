@@ -16,7 +16,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "guzzlehttp/psr7": "^1.6",
-        "phauthentic/file-storage-factories": "dev-master",
+        "phauthentic/file-storage-factories": "dev-tests",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
@@ -38,7 +38,10 @@
     "autoload": {
         "psr-4": {
             "Phauthentic\\Infrastructure\\Storage\\": "src"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

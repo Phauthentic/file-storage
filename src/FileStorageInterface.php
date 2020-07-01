@@ -19,7 +19,7 @@ namespace Phauthentic\Infrastructure\Storage;
 use League\Flysystem\AdapterInterface;
 
 /**
- * StorageHandlerInterface
+ * FileStorageInterface
  */
 interface FileStorageInterface
 {

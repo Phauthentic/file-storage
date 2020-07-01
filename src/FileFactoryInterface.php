@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**

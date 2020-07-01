@@ -33,11 +33,20 @@ class FileStorageTest extends TestCase
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $fileStorage = new FileStorage(
-            new StorageService(
-                new StorageAdapterFactory()
-            )
+        $storageService = new StorageService(
+            new StorageAdapterFactory()
         );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage1' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService);
 
         $fileOnDisk = $this->getFixtureFile('titus.jpg');
 

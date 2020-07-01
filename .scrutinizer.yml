@@ -29,7 +29,7 @@ build:
       #mariadb: 10.1.40
     environment:
         hosts:
-            cake3.world-architects.com: '127.0.0.1'
+            localhost: '127.0.0.1'
         redis: true
         node: 10.16.0
         php:
