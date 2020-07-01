@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc61963e3152ca0b1e189d9ea79ec91f",
+    "content-hash": "33a9a83433a16f773bad8bd3da7c396b",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -169,11 +169,17 @@
         },
         {
             "name": "phauthentic/file-storage-factories",
-            "version": "dev-tests",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
-                "url": "git@github.com:phauthentic/file-storage-factories.git",
-                "reference": "99859bf5e02d65c3aa75d8853383fc7de1982d57"
+                "url": "https://github.com/Phauthentic/file-storage-factories.git",
+                "reference": "a1abec340a2d6be5514869853d601611db944ed2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Phauthentic/file-storage-factories/zipball/a1abec340a2d6be5514869853d601611db944ed2",
+                "reference": "a1abec340a2d6be5514869853d601611db944ed2",
+                "shasum": ""
             },
             "require": {
                 "league/flysystem": "^1.0",
@@ -200,49 +206,7 @@
                     "Phauthentic\\Infrastructure\\Storage\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Phauthentic\\Storage\\Test\\": "tests",
-                    "Phauthentic\\Storage\\Test\\Fixture\\": "tests\\Fixture"
-                }
-            },
-            "scripts": {
-                "post-install-cmd": [
-                    "php config/composer_post_install.php"
-                ],
-                "test": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpunit"
-                ],
-                "test-coverage": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpunit --coverage-text"
-                ],
-                "test-coverage-html": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpunit --coverage-html ./tmp/coverage"
-                ],
-                "cscheck": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpcs ./src ./tests --standard=./phpcs.xml -s"
-                ],
-                "csfix": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpcbf ./src ./tests --standard=./phpcs.xml"
-                ],
-                "analyze": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "./bin/phpstan analyse ./src -l 5"
-                ],
-                "phive": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "php ./config/composer_phive.php"
-                ],
-                "serve": [
-                    "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-                    "php -S localhost:8081 -t ./public"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -258,7 +222,6 @@
                 "abstraction",
                 "dropbox",
                 "file",
-                "file",
                 "filesystem",
                 "ftp",
                 "media",
@@ -266,7 +229,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2020-07-01T20:15:27+00:00"
+            "time": "2020-07-01T21:23:14+00:00"
         },
         {
             "name": "psr/container",
