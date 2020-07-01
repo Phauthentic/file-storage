@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase;
 
+use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileStorage;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;

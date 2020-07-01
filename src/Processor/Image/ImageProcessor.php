@@ -19,6 +19,7 @@ namespace Phauthentic\Infrastructure\Storage\Processor\Image;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use InvalidArgumentException;
 use League\Flysystem\Config;
 use Phauthentic\Infrastructure\Storage\FileInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Image\Exception\TempFileCreationFailedException;
@@ -27,7 +28,8 @@ use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\FileStorageInterface;
 use Phauthentic\Infrastructure\Storage\Processor\ProcessorInterface;
 use Phauthentic\Infrastructure\Storage\Utility\TemporaryFile;
-use InvalidArgumentException;
+
+use function Phauthentic\Infrastructure\Storage\fopen;
 
 /**
  * Image Operator

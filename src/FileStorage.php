@@ -21,7 +21,7 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
-use RuntimeException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 
 /**
  * File Storage
@@ -94,7 +94,7 @@ class FileStorage implements FileStorageInterface
         $file = $this->runCallbacks('beforeSave', $file);
 
         $storage = $this->getStorage($file->storage());
-        $storage->write($file->path(), $file->resource(), $config);
+        $storage->writeStream($file->path(), $file->resource(), $config);
 
         return $this->runCallbacks('afterSave', $file);
     }
@@ -106,12 +106,15 @@ class FileStorage implements FileStorageInterface
     {
         $file = $this->runCallbacks('beforeRemove', $file);
 
-        $this->getStorage($file->storage())->delete($file->path());
+        // Delete all variants of the file
         foreach ($file->variants() as $variant) {
             if (!empty($variant['path'])) {
                 $this->getStorage($file->storage())->delete($variant['path']);
             }
         }
+
+        // Delete the file
+        $this->getStorage($file->storage())->delete($file->path());
 
         return $this->runCallbacks('afterRemove', $file);
     }
@@ -121,17 +124,22 @@ class FileStorage implements FileStorageInterface
      */
     public function removeVariant(FileInterface $file, string $name): FileInterface
     {
-        if (!$file->hasVariants()) {
-            throw new RuntimeException(sprintf(
-                'Manipulation `%s` does not exist',
+        if (!$file->hasVariant($name)) {
+            throw new VariantException(sprintf(
+                'Variant `%s` does not exist',
                 $name
             ));
         }
 
         $variant = $file->variant($name);
-        if (!empty($variant['path'])) {
-            $this->getStorage($file->storage())->delete($variant['path']);
+        if (empty($variant['path'])) {
+            throw new VariantException(sprintf(
+                'Variant `%s` is missing a path',
+                $name
+            ));
         }
+
+        $this->getStorage($file->storage())->delete($variant['path']);
 
         $variants = $file->variants();
         unset($variants[$name]);

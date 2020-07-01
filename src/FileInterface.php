@@ -108,7 +108,7 @@ interface FileInterface extends JsonSerializable
      *
      * @return array
      */
-    public function variants(): ?array;
+    public function variants(): array;
 
     /**
      * Checks if the file has a specific variant
