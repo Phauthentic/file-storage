@@ -38,7 +38,7 @@ class FileStorageTest extends TestCase
             new StorageAdapterFactory()
         );
 
-        $storageService->loadAdapterConfigFromArray([
+        $storageService->setAdapterConfigFromArray([
             'local' => [
                 'class' => LocalFactory::class,
                 'options' => [
@@ -46,6 +46,7 @@ class FileStorageTest extends TestCase
                 ]
             ],
         ]);
+
         $fileStorage = new FileStorage($storageService);
 
         $fileOnDisk = $this->getFixtureFile('titus.jpg');

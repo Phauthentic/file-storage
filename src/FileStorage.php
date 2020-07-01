@@ -24,7 +24,7 @@ use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 
 /**
- * File Storage Service
+ * File Storage
  */
 class FileStorage implements FileStorageInterface
 {

@@ -45,7 +45,7 @@ $storageService = new StorageService(
     new StorageAdapterFactory()
 );
 
-$storageService->loadAdapterConfigFromArray([
+$storageService->setAdapterConfigFromArray([
     'local' => [
         'class' => LocalFactory::class,
         'options' => [
@@ -131,7 +131,7 @@ echo PHP_EOL;
  * Removing the file
  ******************************************************************************/
 
-$fileStorage->remove($file);
+//$fileStorage->remove($file);
 
 /*******************************************************************************
  * Just some output
