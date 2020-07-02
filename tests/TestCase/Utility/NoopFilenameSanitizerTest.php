@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase\Utility;
 
-use Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizer;
 use Phauthentic\Infrastructure\Storage\Utility\NoopFilenameSanitizer;
 use Phauthentic\Test\TestCase\TestCase;
 
@@ -35,7 +34,6 @@ class NoopFilenameSanitizerTest extends TestCase
         // Valid name without extension
         $result = $sanitizer->sanitize('this # "", \` - ! should-no-change');
         $this->assertEquals('this # "", \` - ! should-no-change', $result);
-
     }
 
     /**
