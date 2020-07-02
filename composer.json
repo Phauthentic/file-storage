@@ -16,7 +16,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "guzzlehttp/psr7": "^1.6",
-        "phauthentic/file-storage-factories": "dev-tests",
+        "phauthentic/file-storage-factories": "dev-develop",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
