@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage\PathBuilder;
 
+use DateTime;
+use DateTimeInterface;
 use InvalidArgumentException;
 use Phauthentic\Infrastructure\Storage\FileInterface;
 use Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizer;
@@ -41,7 +43,15 @@ class PathBuilder implements PathBuilderInterface
         'beautifyFilename' => false,
         'sanitizer' => null,
         'pathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{extension}',
-        'variantPathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{hashedVariant}.{extension}'
+        'variantPathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{hashedVariant}.{extension}',
+        'dateFormat' => [
+            'year' => 'Y',
+            'month' => 'm',
+            'day' => 'd',
+            'hour' => 'H',
+            'minute' => 'i',
+            'custom' => 'Y-m-d'
+        ]
     ];
 
     /**
@@ -61,7 +71,7 @@ class PathBuilder implements PathBuilderInterface
      */
     public function __construct(array $config = [])
     {
-        $this->config = array_merge_recursive($this->defaultConfig, $config);
+        $this->config = array_merge($this->defaultConfig, $config);
 
         if (!$this->config['sanitizer'] instanceof FilenameSanitizerInterface) {
             $this->filenameSanitizer = new FilenameSanitizer();
@@ -161,6 +171,16 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
+     * Override this methods if you want or need another object
+     *
+     * @return \DateTimeInterface
+     */
+    protected function getDateObject(): DateTimeInterface
+    {
+        return new DateTime();
+    }
+
+    /**
      * @inheritDoc
      */
     protected function buildPath(FileInterface $file, ?string $variant, array $options = []): string
@@ -170,6 +190,7 @@ class PathBuilder implements PathBuilderInterface
         $filename = $this->filename($file, $options);
         $hashedVariant = substr(hash('sha1', (string)$variant), 0, 6);
         $template = $variant ? $config['variantPathTemplate'] : $config['pathTemplate'];
+        $dateTime = $this->getDateObject();
 
         $placeholders = [
             '{ds}' => $ds,
@@ -184,7 +205,13 @@ class PathBuilder implements PathBuilderInterface
             '{filename}' => $filename,
             '{hashedFilename}' => sha1($filename),
             '{variant}' => $variant,
-            '{hashedVariant}' => $hashedVariant
+            '{hashedVariant}' => $hashedVariant,
+            '{year}' => $dateTime->format($config['dateFormat']['year']),
+            '{month}' => $dateTime->format($config['dateFormat']['month']),
+            '{day}' => $dateTime->format($config['dateFormat']['day']),
+            '{hour}' => $dateTime->format($config['dateFormat']['hour']),
+            '{minute}' => $dateTime->format($config['dateFormat']['minute']),
+            '{date}' => $dateTime->format($config['dateFormat']['custom']),
         ];
 
         $result = $this->parseTemplate($placeholders, $template, $ds);
