@@ -19,11 +19,9 @@ namespace Phauthentic\Infrastructure\Storage;
 use InvalidArgumentException;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
-use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
-use Phauthentic\Infrastructure\Storage\UrlBuilder\NoopUrlBuilder;
 use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 
 /**
@@ -69,7 +67,7 @@ class FileStorage implements FileStorageInterface
         ?UrlBuilderInterface $urlBuilder = null
     ) {
         $this->storageService = $storageService;
-        $this->pathBuilder = $pathBuilder ?? new PathBuilder();
+        $this->pathBuilder = $pathBuilder;
         $this->urlBuilder = $urlBuilder;
     }
 

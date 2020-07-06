@@ -28,9 +28,9 @@ $fileStorage = new FileStorage(
 );
 ```
 
-Passing the path builder is not mandatory, but you **must** set a path to the file object before in this case, otherwise the operation will fail. It is strongly recommended use a path builder to create the path.
+Passing the path builder is not mandatory, but you **must** set a path to the file object *before* storing the file in this case, otherwise the operation will fail. It's strongly recommended that you use a path builder to create the path.
 
-There is also a third argument you can pass, which is the UrlBuilder. It is not mandatory either but it is very useful to pre-generate the URL for a file. Especially if it is an outside URL like for AWS objects for example. If you want to do  this and how you do this is totally up to you. We recommend that you create your own URL builder in the case you want to use this feature.
+There is also a third argument you can pass, which is the UrlBuilder. It is not mandatory either, but it is very useful to pre-generate the URL for a file. Especially if it is an outside URL like for AWS objects for example. If you want to do  this and how you do this is totally up to you. We recommend that you create your own URL builder in the case you want to use this feature.
 
 ## Storing a file
 
