@@ -86,6 +86,6 @@ class ConditionalPathBuilderTest extends TestCase
         });
 
         $result = $conditionalBuilder->pathForVariant($file, 'resize');
-        $this->assertEquals('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg', $result);
+        $this->assertEquals($this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg'), $result);
     }
 }
