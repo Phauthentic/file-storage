@@ -1,5 +1,9 @@
 # The Storage Service
 
+This service gives you direct access to the different storage adapters. To store file objects and to get all the advantages of this library you must use the [File Storage Service](The-Storage-Service.md)!
+
+Consider this service "low level" access to the storage backends. It gives you direct access but doesn't do anything else for you. It just manages adapter instances and provides access to them.
+
 ### Constructing the service
 
 ```php

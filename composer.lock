@@ -445,12 +445,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Phauthentic/file-storage-image-processor.git",
-                "reference": "6ec2d47210f888f4fdf028cfbde7bc2a4ecac481"
+                "reference": "bc73901548fafddca2bede450a97c3cbfde58f87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Phauthentic/file-storage-image-processor/zipball/6ec2d47210f888f4fdf028cfbde7bc2a4ecac481",
-                "reference": "6ec2d47210f888f4fdf028cfbde7bc2a4ecac481",
+                "url": "https://api.github.com/repos/Phauthentic/file-storage-image-processor/zipball/bc73901548fafddca2bede450a97c3cbfde58f87",
+                "reference": "bc73901548fafddca2bede450a97c3cbfde58f87",
                 "shasum": ""
             },
             "require": {
@@ -489,7 +489,7 @@
                 "persistence",
                 "storage"
             ],
-            "time": "2020-07-02T13:48:48+00:00"
+            "time": "2020-07-03T15:42:41+00:00"
         },
         {
             "name": "psr/log",

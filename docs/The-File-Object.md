@@ -4,6 +4,8 @@ The *File* object is the central object in this library around which all functio
 
 The file object is more a [data transfer object](https://en.wikipedia.org/wiki/Data_transfer_object) than something that implements business logic. It is basically like an adapter between your apps understanding of what and where a file is to the actual storage system that works with the file itself.
 
+**Be aware the file object that comes with this library is [immutable](https://en.wikipedia.org/wiki/Immutable_object)!**
+
 ## Creating a new file
 
 You can either instantiate the file object directly or using the [FileFactory](../src/FileFactory.php) to do so.
@@ -18,7 +20,17 @@ $file = FileFactory::fromDisk(
 ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
 ```
 
-Manually creating a file object will require you to pass the information manually.
+File objects can be created as well from objects that implement the [PSR7](https://www.php-fig.org/psr/psr-7/) `UploadedFileInterface`:
+
+```php
+$file = FileFactory::fromUploadedFile(
+    $uploadedFile,
+    'local'
+)
+->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
+```
+
+Manually creating a file object will require you to pass the information:
 
 ```php
 $file = File::create(
@@ -48,13 +60,18 @@ You'll have to reconstruct the file object later from your persisted information
 You basically do the same as when storing a new file but without calling `withFile()` or `withResource()`.
 
 ```
+// Some pseudo-code to illustrate the idea
+$dbRow = $myDbConnection
+    ->getTable('file_storage')
+    ->getRow('914e1512-9153-4253-a81e-7ee2edc1d973');
+
 $file = File::create(
     $dbRow->filename,
     $dbRow->filesize,
     $dbRow->mimetype
     $dbRow->storage
 )
-->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
+->withUuid($dbRow->id);
 ```
 
 If you added metadata and variants to it or other things you'll have to restore the values by calling the according methods.
