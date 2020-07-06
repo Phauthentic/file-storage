@@ -21,7 +21,10 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\NoopUrlBuilder;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 
 /**
  * File Storage
@@ -39,9 +42,14 @@ class FileStorage implements FileStorageInterface
     ];
 
     /**
-     * @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface
+     * @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface|null
      */
-    protected PathBuilderInterface $pathBuilder;
+    protected ?PathBuilderInterface $pathBuilder;
+
+    /**
+     * @var \Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface|null
+     */
+    protected ?UrlBuilderInterface $urlBuilder;
 
     /**
      * @var \Phauthentic\Infrastructure\Storage\StorageServiceInterface
@@ -52,14 +60,17 @@ class FileStorage implements FileStorageInterface
      * Constructor
      *
      * @param \Phauthentic\Infrastructure\Storage\StorageServiceInterface $storageService Storage Service
-     * @param \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface $pathBuilder Path Builder
+     * @param \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface|null $pathBuilder Path Builder
+     * @param \Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface|null $urlBuilder Path Builder
      */
     public function __construct(
         StorageServiceInterface $storageService,
-        ?PathBuilderInterface $pathBuilder = null
+        ?PathBuilderInterface $pathBuilder = null,
+        ?UrlBuilderInterface $urlBuilder = null
     ) {
-        $this->pathBuilder = $pathBuilder ?? new PathBuilder();
         $this->storageService = $storageService;
+        $this->pathBuilder = $pathBuilder ?? new PathBuilder();
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -90,7 +101,14 @@ class FileStorage implements FileStorageInterface
     {
         $config = new Config();
 
-        $file = $file->buildPath($this->pathBuilder);
+        if ($this->pathBuilder !== null) {
+            $file = $file->buildPath($this->pathBuilder);
+        }
+
+        if ($this->urlBuilder !== null) {
+            $file = $file->buildUrl($this->urlBuilder);
+        }
+
         $file = $this->runCallbacks('beforeSave', $file);
 
         $storage = $this->getStorage($file->storage());
@@ -125,10 +143,7 @@ class FileStorage implements FileStorageInterface
     public function removeVariant(FileInterface $file, string $name): FileInterface
     {
         if (!$file->hasVariant($name)) {
-            throw new VariantException(sprintf(
-                'Variant `%s` does not exist',
-                $name
-            ));
+            throw VariantDoesNotExistException::withName($name);
         }
 
         $variant = $file->variant($name);

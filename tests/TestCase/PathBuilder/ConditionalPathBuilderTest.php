@@ -19,6 +19,7 @@ namespace Phauthentic\Test\TestCase\PathBuilder;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileInterface;
 use Phauthentic\Infrastructure\Storage\PathBuilder\ConditionalPathBuilder;
+use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Test\TestCase\TestCase;
 
@@ -59,5 +60,32 @@ class ConditionalPathBuilderTest extends TestCase
 
         $conditionalBuilder->path($file1);
         $conditionalBuilder->path($file2);
+    }
+
+    /**
+     * @return void
+     */
+    public function testPathForVariant(): void
+    {
+        $fixtureFile = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fixtureFile, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->belongsToModel('User', '1');
+
+        $file->withVariant('resize', [
+            'operations' => [
+                'resize' => [100, 100]
+            ]
+        ]);
+
+        $defaultBuilder = new PathBuilder();
+        $pathBuilder = new PathBuilder();
+        $conditionalBuilder = new ConditionalPathBuilder($defaultBuilder);
+        $conditionalBuilder->addPathBuilder($pathBuilder, function (FileInterface $file) {
+            return $file->model() !== 'User';
+        });
+
+        $result = $conditionalBuilder->pathForVariant($file, 'resize');
+        $this->assertEquals('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg', $result);
     }
 }

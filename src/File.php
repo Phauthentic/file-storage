@@ -18,7 +18,9 @@ namespace Phauthentic\Infrastructure\Storage;
 
 use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 use RuntimeException;
 
 /**
@@ -97,6 +99,11 @@ class File implements FileInterface
      * @var resource
      */
     protected $resource;
+
+    /**
+     * @var string
+     */
+    protected string $url = '';
 
     /**
      * @var array
@@ -490,10 +497,7 @@ class File implements FileInterface
     public function variant(string $name): array
     {
         if (!isset($this->variants[$name])) {
-            throw new VariantException(sprintf(
-                'Variant %s does not exist',
-                $name
-            ));
+            throw VariantDoesNotExistException::withName($name);
         }
 
         return $this->variants[$name];
@@ -550,6 +554,35 @@ class File implements FileInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function buildUrl(UrlBuilderInterface $urlBuilder): self
+    {
+        $this->url = $urlBuilder->url($this);
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function url(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withUrl(string $url): self
+    {
+        $that = clone $this;
+        $that->url = $url;
+
+        return $that;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -567,6 +600,7 @@ class File implements FileInterface
             'readableSize' => $this->readableSize(),
             'variants' => $this->variants,
             'metaData' => $this->metadata,
+            'url' => $this->url
         ];
     }
 
