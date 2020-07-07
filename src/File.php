@@ -19,7 +19,6 @@ namespace Phauthentic\Infrastructure\Storage;
 use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
-use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 use RuntimeException;
 
@@ -599,7 +598,7 @@ class File implements FileInterface
             'collection' => $this->collection,
             'readableSize' => $this->readableSize(),
             'variants' => $this->variants,
-            'metaData' => $this->metadata,
+            'metadata' => $this->metadata,
             'url' => $this->url
         ];
     }

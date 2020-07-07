@@ -114,7 +114,7 @@ class FileTest extends TestCase
             'collection' => 'avatar',
             'readableSize' => '325kB',
             'variants' => [],
-            'metaData' => [
+            'metadata' => [
                 'one' => 'two',
                 'two' => 'one',
             ],
