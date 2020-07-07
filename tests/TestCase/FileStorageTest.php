@@ -19,6 +19,7 @@ namespace Phauthentic\Test\TestCase;
 use Phauthentic\Infrastructure\Storage\Factories\LocalFactory;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileStorage;
+use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
 use Phauthentic\Infrastructure\Storage\StorageService;
 
@@ -35,7 +36,7 @@ class FileStorageTest extends TestCase
         $ds = DIRECTORY_SEPARATOR;
 
         $storageService = new StorageService(
-            new StorageAdapterFactory()
+            new StorageAdapterFactory(),
         );
 
         $storageService->setAdapterConfigFromArray([
@@ -47,7 +48,10 @@ class FileStorageTest extends TestCase
             ],
         ]);
 
-        $fileStorage = new FileStorage($storageService);
+        $fileStorage = new FileStorage(
+            $storageService,
+            new PathBuilder()
+        );
 
         $fileOnDisk = $this->getFixtureFile('titus.jpg');
 

@@ -18,6 +18,7 @@ namespace Phauthentic\Infrastructure\Storage;
 
 use JsonSerializable;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 
 /**
  * File Interface
@@ -222,6 +223,29 @@ interface FileInterface extends JsonSerializable
      * @return $this
      */
     public function buildPath(PathBuilderInterface $pathBuilder): self;
+
+    /**
+     * Builds the URL for this file
+     *
+     * @param \Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface $urlBuilder URL Builder
+     * @return $this
+     */
+    public function buildUrl(UrlBuilderInterface $urlBuilder): self;
+
+    /**
+     * Gets the URL for the file
+     *
+     * @return string
+     */
+    public function url(): string;
+
+    /**
+     * Sets a URL
+     *
+     * @param string $url URL
+     * @return self
+     */
+    public function withUrl(string $url): self;
 
     /**
      * Storage name

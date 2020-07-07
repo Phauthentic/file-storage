@@ -29,6 +29,33 @@ class PathBuilderTest extends TestCase
     /**
      * @return void
      */
+    public function testDatePaths(): void
+    {
+        $builder = $this->getMockBuilder(PathBuilder::class)
+            ->setConstructorArgs([
+                [
+                    'pathTemplate' => '{year}{ds}{month}{ds}{day}{ds}{hour}{ds}{minute}'
+                ]
+            ])
+            ->setMethods(['getDateObject'])
+            ->getMock();
+
+        $builder->expects($this->any())
+            ->method('getDateObject')
+            ->willReturn((new \DateTime('2020-01-01T20:00:00')));
+
+        $file = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($file, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
+
+        $result = $builder->path($file);
+
+        $this->assertEquals($this->sanitizeSeparator('2020\01\01\20\00'), $result);
+    }
+
+    /**
+     * @return void
+     */
     public function testPathWithEmptyPlaceHolders(): void
     {
         $file = $this->getFixtureFile('titus.jpg');

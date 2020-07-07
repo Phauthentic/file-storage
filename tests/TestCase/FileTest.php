@@ -68,10 +68,6 @@ class FileTest extends TestCase
             ])
             ->withMetadataKey('bar', 'foo');
 
-        $this->expectException(RuntimeException::class);
-        //$this->expectExceptionMessage('Path has not been set');
-        $file->path();
-
         $file = $file->buildPath($pathBuilder);
 
         $expectedMetadata = [
@@ -105,5 +101,45 @@ class FileTest extends TestCase
         $path = '/test/path/file.jpg';
         $file = $file->withPath($path);
         $this->assertEquals($path, $file->path());
+
+        $expected = [
+            'uuid' => '914e1512-9153-4253-a81e-7ee2edc1d973',
+            'filename' => 'foobar.jpg',
+            'filesize' => 332643,
+            'mimeType' => 'image/jpeg',
+            'extension' => 'jpg',
+            'path' => '/test/path/file.jpg',
+            'model' => 'User',
+            'modelId' => '1',
+            'collection' => 'avatar',
+            'readableSize' => '325kB',
+            'variants' => [],
+            'metaData' => [
+                'one' => 'two',
+                'two' => 'one',
+            ],
+            'url' => '',
+        ];
+        $this->assertEquals($expected, $file->toArray());
+
+        $file = $file->withoutMetadata();
+        $this->assertEmpty($file->metadata());
+
+        $this->assertEmpty($file->variants());
+    }
+
+    /**
+     * @return void
+     */
+    public function testPathException(): void
+    {
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Path has not been set');
+        $file->path();
     }
 }

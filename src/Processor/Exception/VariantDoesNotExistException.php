@@ -14,21 +14,21 @@
 
 declare(strict_types=1);
 
-namespace Phauthentic\Infrastructure\Storage\Processor\Image\Exception;
+namespace Phauthentic\Infrastructure\Storage\Processor\Exception;
 
 /**
- * TempFileCreationFailedException
+ * VariantDoesNotExistException
  */
-class TempFileCreationFailedException extends ImageProcessingException
+class VariantDoesNotExistException extends VariantException
 {
     /**
      * @param string $name Name
      * @return self
      */
-    public static function withFilename(string $name): self
+    public static function withName(string $name): self
     {
         return new self(sprintf(
-            'Failed to create `%s`',
+            'A variant with the name `%s` does not exists',
             $name
         ));
     }

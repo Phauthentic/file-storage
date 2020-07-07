@@ -35,3 +35,13 @@ The same problem applies to the actual logic of transferring the file from the a
 The file object implements `withResource()` and `withFile()`. The second takes a file path and turns it into a resource and calls withResource() internally.
 
 When you store a file for the first time in your storage backend, you **must** add a resource to the file object. If you don't do that, you'll get an exception from the file storage service.
+
+## Dependencies
+
+We think there is a need to explain why we have picked the dependencies we have, because we try to keep dependencies low. However, there are some cases that make sense to use existing libraries.
+
+The dependencies have been selected based on the code quality and amount of further dependencies they would introduce.
+
+There are two dependencies, one of them `phauthentic/file-storage-factories` is just to abstract the real dependency `flysystem\flysystem`.
+
+Flysystem is the underlying storage abstraction library that provides the functionality to write to different storage backends.

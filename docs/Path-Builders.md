@@ -20,6 +20,13 @@ $builder = new PathBuilder([
  * **sanitizer**: null
  * **pathTemplate**: '{model}{ds}{randomPath}{ds}{id}'
  * **variantPathTemplate**: '{filename}.{variant}.{extension}'
+ * **dateFormat**: Array of [DateTimeInterface::format()](https://www.php.net/manual/en/datetime.format.php) compatible values
+   * **year**: 'Y'
+   * **month**: 'm'
+   * **day**: 'd'
+   * **hour**: 'H'
+   * **minute**: 'i'
+   * **custom**: 'Y-m-d'
 
 ### Path Template Placeholders
 
@@ -40,6 +47,12 @@ For example this template string
  * **{model}**: The model name.
  * **{modelId}**: The id of the models entity.
  * **{collection}**: The collection the file belongs into.
+ * **{year}**: Four digits year
+ * **{month}**: Two digits month value
+ * **{day}**: Two digits day value
+ * **{hour}**: Two digits hour value
+ * **{minute}**: Two digits minute value
+ * **{date}**: Custom date format i.e. '2020-01-03'
 
 The following placeholders are only valid when used in a path for a manipulated file.
 

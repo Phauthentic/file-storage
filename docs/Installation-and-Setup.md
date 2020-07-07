@@ -10,6 +10,14 @@ composer require phauthentic/file-storage
 
 If you want to manually install it we assume you know what you're doing by not using Composer.
 
+### Image processing feature installation
+
+To use the image processing feature you'll need to add this repository as well:
+
+```sh
+composer require phauthentic/file-storage-image-processor
+```
+
 ## Development Tools
 
 We are using [Phive](https://github.com/phar-io/phive) for most of the dev tools. This provides a few advantges, mostly that we get away with a lot less dev dependencies that can cause additional conflicts.

@@ -15,18 +15,15 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "guzzlehttp/psr7": "^1.6",
         "phauthentic/file-storage-factories": "dev-develop",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "intervention/image": "^2.5",
-        "spatie/image-optimizer": "^1.2"
+        "phauthentic/file-storage-image-processor": "dev-master"
     },
     "suggest": {
-        "spatie/image-optimizer": "^1.2",
-        "intervention/image": "^2.5"
+        "phauthentic/file-storage-image-processor": "You must install this for image processing"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

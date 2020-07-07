@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
-use GuzzleHttp\Psr7\StreamWrapper;
 use Phauthentic\Infrastructure\Storage\Exception\FileDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Exception\FileNotReadableException;
 use Phauthentic\Infrastructure\Storage\Utility\MimeType;
 use Phauthentic\Infrastructure\Storage\Utility\PathInfo;
+use Phauthentic\Infrastructure\Storage\Utility\StreamWrapper;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
