@@ -79,6 +79,39 @@ class PathBuilder implements PathBuilderInterface
     }
 
     /**
+     * @param string $template Template string
+     * @return self
+     */
+    public function setPathTemplate(string $template): self
+    {
+        $this->config['pathTemplate'] = $template;
+
+        return $this;
+    }
+
+    /**
+     * @param string $template Template string
+     * @return self
+     */
+    public function setVariantPathTemplate(string $template): self
+    {
+        $this->config['variantPathTemplate'] = $template;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format Date format
+     * @return self
+     */
+    public function setCustomDateFormat(string $format): self
+    {
+        $this->config['dateFormat']['custom'] = $format;
+
+        return $this;
+    }
+
+    /**
      * Builds the path under which the data gets stored in the storage adapter.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
