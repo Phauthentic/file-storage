@@ -17,6 +17,7 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * Converts Guzzle streams into PHP stream resources.
@@ -27,10 +28,10 @@ class StreamWrapper
     public $context;
 
     /** @var StreamInterface */
-    private $stream;
+    private StreamInterface $stream;
 
     /** @var string r, r+, or w */
-    private $mode;
+    private string $mode;
 
     /**
      * Returns a resource representing the stream.
@@ -54,7 +55,16 @@ class StreamWrapper
             );
         }
 
-        return fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
+        $result = \fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
+
+        if ($result === false) {
+            throw new RuntimeException(\sprintf(
+                'Failed to open guzzle://stream with mode %s',
+                $mode
+            ));
+        }
+
+        return $result;
     }
 
     /**
@@ -66,7 +76,7 @@ class StreamWrapper
      */
     public static function createStreamContext(StreamInterface $stream)
     {
-        return stream_context_create([
+        return \stream_context_create([
             'guzzle' => ['stream' => $stream]
         ]);
     }
@@ -77,7 +87,7 @@ class StreamWrapper
     public static function register()
     {
         if (!in_array('guzzle', stream_get_wrappers(), true)) {
-            stream_wrapper_register('guzzle', __CLASS__);
+            \stream_wrapper_register('guzzle', __CLASS__);
         }
     }
 
