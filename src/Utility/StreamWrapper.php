@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage\Utility;
 
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -48,11 +49,12 @@ class StreamWrapper
         } elseif ($stream->isWritable()) {
             $mode = 'w';
         } else {
-            throw new \InvalidArgumentException('The stream must be readable, '
-                . 'writable, or both.');
+            throw new InvalidArgumentException(
+                'The stream must be readable, writable, or both.'
+            );
         }
 
-        return fopen('guzzle://stream', $mode, null, self::createStreamContext($stream));
+        return fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
     }
 
     /**
@@ -74,7 +76,7 @@ class StreamWrapper
      */
     public static function register()
     {
-        if (!in_array('guzzle', stream_get_wrappers())) {
+        if (!in_array('guzzle', stream_get_wrappers(), true)) {
             stream_wrapper_register('guzzle', __CLASS__);
         }
     }
