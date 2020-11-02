@@ -39,6 +39,7 @@ class PathBuilder implements PathBuilderInterface
     protected array $defaultConfig = [
         'directorySeparator' => DIRECTORY_SEPARATOR,
         'randomPath' => 'sha1',
+        'randomPathLevels' => 3,
         'sanitizeFilename' => true,
         'beautifyFilename' => false,
         'sanitizer' => null,
@@ -224,13 +225,14 @@ class PathBuilder implements PathBuilderInterface
         $hashedVariant = substr(hash('sha1', (string)$variant), 0, 6);
         $template = $variant ? $config['variantPathTemplate'] : $config['pathTemplate'];
         $dateTime = $this->getDateObject();
+        $randomPathLevels = empty($config['randomPathLevels']) ? (int)$config['randomPathLevels'] : 3;
 
         $placeholders = [
             '{ds}' => $ds,
             '{model}' => $file->model(),
             '{collection}' => $file->collection(),
             '{id}' => $file->uuid(),
-            '{randomPath}' => $this->randomPath($file->uuid()),
+            '{randomPath}' => $this->randomPath($file->uuid(), $randomPathLevels),
             '{modelId}' => $file->modelId(),
             '{strippedId}' => str_replace('-', '', $file->uuid()),
             '{extension}' => $file->extension(),
