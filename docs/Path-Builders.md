@@ -17,7 +17,7 @@ $builder = new PathBuilder([
  * **randomPath**: 'sha1'
  * **sanitizeFilename**: true
  * **beautifyFilename**: false
- * **sanitizer**: null
+ * **filenameSanitizer**: null|\Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizerInterface
  * **pathTemplate**: '{model}{ds}{randomPath}{ds}{id}'
  * **variantPathTemplate**: '{filename}.{variant}.{extension}'
  * **dateFormat**: Array of [DateTimeInterface::format()](https://www.php.net/manual/en/datetime.format.php) compatible values
@@ -59,6 +59,12 @@ The following placeholders are only valid when used in a path for a manipulated 
  * **{variant}**: The name of the variant
  * **{hashedVariant}**: A hashed and to six chars truncated version of the manipulation name.
 
+### Filename sanitization
+
+This path builder provides a `setFilenameSanitizer()` method that takes an object implementing `Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizerInterface`.
+
+This is an alternative way to provide a sanitizer besides passing it through the configuration array.
+
 ## Conditional Path Builder
 
 Add callbacks and path builders to check on the file which of the builders should be used to build the path.
@@ -68,6 +74,10 @@ This allows you to use different instances with a different configuration or imp
 The example below will use the "other" path builder instance if the model attached to the file called "user". If not it will fall back to the default builder.
 
 ```php
+use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
+use Phauthentic\Infrastructure\Storage\PathBuilder\ConditionalPathBuilder;
+use Phauthentic\Infrastructure\Storage\FileInterface;
+
 $default = new PathBuilder();
 $other = new PathBuilder([
     // Configure it differently
@@ -84,7 +94,10 @@ $builder->addPathBuilder($other, function(FileInterface $file, ?string $manipula
 To implement your own path builder implement the [PathBuilderInterface](../src/PathBuilder/PathBuilderInterface.php).
 
 ```php
-MyPathBuilder implements PathBuilderInterface
+use Phauthentic\Infrastructure\Storage\FileInterface;
+use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
+
+class MyPathBuilder implements PathBuilderInterface
 {
     public function path(FileInterface $file, array $options = []): string
     {
@@ -94,6 +107,11 @@ MyPathBuilder implements PathBuilderInterface
     public function pathForManipulation(FileInterface $file, string $name, array $options = []): string
     {
         // Your code...
+    }
+
+    public function pathForVariant(FileInterface $file, string $name, array $options = []): string
+    {
+        // Your code
     }
 }
 ```

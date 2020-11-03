@@ -42,7 +42,7 @@ class PathBuilder implements PathBuilderInterface
         'randomPathLevels' => 3,
         'sanitizeFilename' => true,
         'beautifyFilename' => false,
-        'sanitizer' => null,
+        'filenameSanitizer' => null,
         'pathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{extension}',
         'variantPathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{hashedVariant}.{extension}',
         'dateFormat' => [
@@ -74,9 +74,20 @@ class PathBuilder implements PathBuilderInterface
     {
         $this->config = array_merge($this->defaultConfig, $config);
 
-        if (!$this->config['sanitizer'] instanceof FilenameSanitizerInterface) {
+        if (!$this->config['filenameSanitizer'] instanceof FilenameSanitizerInterface) {
             $this->filenameSanitizer = new FilenameSanitizer();
         }
+    }
+
+    /**
+     * @param \Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizerInterface $sanitizer
+     * @return self
+     */
+    public function setFilenameSanitizer(FilenameSanitizerInterface $sanitizer): self
+    {
+        $this->filenameSanitizer = $sanitizer;
+
+        return $this;
     }
 
     /**
@@ -225,7 +236,7 @@ class PathBuilder implements PathBuilderInterface
         $hashedVariant = substr(hash('sha1', (string)$variant), 0, 6);
         $template = $variant ? $config['variantPathTemplate'] : $config['pathTemplate'];
         $dateTime = $this->getDateObject();
-        $randomPathLevels = empty($config['randomPathLevels']) ? (int)$config['randomPathLevels'] : 3;
+        $randomPathLevels = (int)$config['randomPathLevels'] ?: 3;
 
         $placeholders = [
             '{ds}' => $ds,
