@@ -39,9 +39,10 @@ class PathBuilder implements PathBuilderInterface
     protected array $defaultConfig = [
         'directorySeparator' => DIRECTORY_SEPARATOR,
         'randomPath' => 'sha1',
+        'randomPathLevels' => 3,
         'sanitizeFilename' => true,
         'beautifyFilename' => false,
-        'sanitizer' => null,
+        'filenameSanitizer' => null,
         'pathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{extension}',
         'variantPathTemplate' => '{model}{ds}{randomPath}{ds}{strippedId}{ds}{filename}.{hashedVariant}.{extension}',
         'dateFormat' => [
@@ -73,9 +74,53 @@ class PathBuilder implements PathBuilderInterface
     {
         $this->config = array_merge($this->defaultConfig, $config);
 
-        if (!$this->config['sanitizer'] instanceof FilenameSanitizerInterface) {
+        if (!$this->config['filenameSanitizer'] instanceof FilenameSanitizerInterface) {
             $this->filenameSanitizer = new FilenameSanitizer();
         }
+    }
+
+    /**
+     * @param \Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizerInterface $sanitizer
+     * @return self
+     */
+    public function setFilenameSanitizer(FilenameSanitizerInterface $sanitizer): self
+    {
+        $this->filenameSanitizer = $sanitizer;
+
+        return $this;
+    }
+
+    /**
+     * @param string $template Template string
+     * @return self
+     */
+    public function setPathTemplate(string $template): self
+    {
+        $this->config['pathTemplate'] = $template;
+
+        return $this;
+    }
+
+    /**
+     * @param string $template Template string
+     * @return self
+     */
+    public function setVariantPathTemplate(string $template): self
+    {
+        $this->config['variantPathTemplate'] = $template;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format Date format
+     * @return self
+     */
+    public function setCustomDateFormat(string $format): self
+    {
+        $this->config['dateFormat']['custom'] = $format;
+
+        return $this;
     }
 
     /**
@@ -191,13 +236,14 @@ class PathBuilder implements PathBuilderInterface
         $hashedVariant = substr(hash('sha1', (string)$variant), 0, 6);
         $template = $variant ? $config['variantPathTemplate'] : $config['pathTemplate'];
         $dateTime = $this->getDateObject();
+        $randomPathLevels = (int)$config['randomPathLevels'] ?: 3;
 
         $placeholders = [
             '{ds}' => $ds,
             '{model}' => $file->model(),
             '{collection}' => $file->collection(),
             '{id}' => $file->uuid(),
-            '{randomPath}' => $this->randomPath($file->uuid()),
+            '{randomPath}' => $this->randomPath($file->uuid(), $randomPathLevels),
             '{modelId}' => $file->modelId(),
             '{strippedId}' => str_replace('-', '', $file->uuid()),
             '{extension}' => $file->extension(),

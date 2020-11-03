@@ -72,20 +72,43 @@ class FileStorage implements FileStorageInterface
     }
 
     /**
-     * @param string $type Type
+     * @param string $name Name of the callback
+     * @return void
+     */
+    protected function checkCallbackName(string $name): void
+    {
+        if (!array_key_exists($name, $this->callbacks)) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid callback `%s`, only %s are valid',
+                $name,
+                implode(', ', array_keys($this->callbacks))
+            ));
+        }
+    }
+
+    /**
+     * Adds a callback
+     *
+     * @param string $name
+     * @param callable $callable Callable
+     * @return void
+     */
+    public function addCallback($name, callable $callable): void
+    {
+        $this->checkCallbackName($name);
+        $this->callbacks[$name][] = $callable;
+    }
+
+    /**
+     * @param string $name Name of the callback
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function runCallbacks(string $type, FileInterface $file): FileInterface
+    public function runCallbacks(string $name, FileInterface $file): FileInterface
     {
-        if (!isset($this->callbacks[$type])) {
-            throw new InvalidArgumentException(sprintf(
-                'Type %s is invalid',
-                $type
-            ));
-        }
+        $this->checkCallbackName($name);
 
-        foreach ($this->callbacks[$type] as $callback) {
+        foreach ($this->callbacks[$name] as $callback) {
             $file = $callback($file);
         }
 

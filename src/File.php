@@ -19,7 +19,6 @@ namespace Phauthentic\Infrastructure\Storage;
 use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
-use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 use RuntimeException;
 
@@ -123,7 +122,7 @@ class File implements FileInterface
      * @param array $variants Variants
      * @param array $metadata Meta data
      * @param resource|null $resource
-     * @return self
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
     public static function create(
         string $filename,
@@ -136,7 +135,7 @@ class File implements FileInterface
         array $metadata = [],
         array $variants = [],
         $resource = null
-    ): self {
+    ): FileInterface {
         $that = new self();
 
         $that->filename = $filename;
@@ -149,12 +148,12 @@ class File implements FileInterface
         $that->variants = $variants;
         $that->metadata = $metadata;
 
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $that->extension = empty($extension) ? null : (string)$extension;
+
         if ($resource !== null) {
             $that = $that->withResource($resource);
         }
-
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $that->extension = empty($extension) ? null : (string)$extension;
 
         return $that;
     }
@@ -173,9 +172,9 @@ class File implements FileInterface
      * UUID of the file
      *
      * @param string $uuid UUID string
-     * @return self
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withUuid(string $uuid): self
+    public function withUuid(string $uuid): FileInterface
     {
         $that = clone $this;
         $that->uuid = $uuid;
@@ -197,9 +196,9 @@ class File implements FileInterface
      * Same as withResource() but takes a file path
      *
      * @param string $file File
-     * @return self
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withFile(string $file): self
+    public function withFile(string $file): FileInterface
     {
         $resource = fopen($file, 'rb');
 
@@ -208,6 +207,7 @@ class File implements FileInterface
 
     /**
      * @param mixed $resource
+     * @return void
      */
     protected function assertStreamResource($resource): void
     {
@@ -223,9 +223,9 @@ class File implements FileInterface
      * Stream resource of the file to be stored
      *
      * @param resource $resource Stream Resource
-     * @return self
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withResource($resource): self
+    public function withResource($resource): FileInterface
     {
         $this->assertStreamResource($resource);
 
@@ -240,9 +240,9 @@ class File implements FileInterface
      *
      * @param string $model Model
      * @param string|int $modelId Model ID, UUID string or integer
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function belongsToModel(string $model, $modelId): self
+    public function belongsToModel(string $model, $modelId): FileInterface
     {
         $this->model = $model;
         $this->modelId = $modelId;
@@ -254,9 +254,9 @@ class File implements FileInterface
      * Adds the file to a collection
      *
      * @param string $collection Collection
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function addToCollection(string $collection): self
+    public function addToCollection(string $collection): FileInterface
     {
         $this->collection = $collection;
 
@@ -267,9 +267,9 @@ class File implements FileInterface
      * Sets the path, immutable
      *
      * @param string $path Path to the file
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withPath(string $path): self
+    public function withPath(string $path): FileInterface
     {
         $that = clone $this;
         $that->path = $path;
@@ -397,9 +397,9 @@ class File implements FileInterface
      * Builds the path for this file
      *
      * @param \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface $pathBuilder Path Builder
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function buildPath(PathBuilderInterface $pathBuilder): self
+    public function buildPath(PathBuilderInterface $pathBuilder): FileInterface
     {
         $that = clone $this;
         $that->path = $pathBuilder->path($this);
@@ -409,9 +409,9 @@ class File implements FileInterface
 
     /**
      * @param array $metadata Meta data
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadata(array $metadata): self
+    public function withMetadata(array $metadata): FileInterface
     {
         $that = clone $this;
         $that->metadata = $metadata;
@@ -422,9 +422,9 @@ class File implements FileInterface
     /**
      * @param string $name Name
      * @param mixed $data Data
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadataKey(string $name, $data): self
+    public function withMetadataKey(string $name, $data): FileInterface
     {
         $that = clone $this;
         $that->metadata[$name] = $data;
@@ -434,9 +434,9 @@ class File implements FileInterface
 
     /**
      * @param string $name Name
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withoutMetadataKey(string $name): self
+    public function withoutMetadataKey(string $name): FileInterface
     {
         $that = clone $this;
         unset($that->metadata[$name]);
@@ -508,9 +508,9 @@ class File implements FileInterface
      *
      * @param string $name Name
      * @param array $data Data
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withVariant(string $name, array $data): self
+    public function withVariant(string $name, array $data): FileInterface
     {
         $that = clone $this;
         $that->variants[$name] = $data;
@@ -540,9 +540,9 @@ class File implements FileInterface
      *
      * @param array $variants Variants
      * @param bool $merge Merge Variants, default is true
-     * @return $this
+     * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withVariants(array $variants, bool $merge = true): self
+    public function withVariants(array $variants, bool $merge = true): FileInterface
     {
         $that = clone $this;
         $that->variants = array_merge_recursive(
@@ -556,7 +556,7 @@ class File implements FileInterface
     /**
      * @inheritDoc
      */
-    public function buildUrl(UrlBuilderInterface $urlBuilder): self
+    public function buildUrl(UrlBuilderInterface $urlBuilder): FileInterface
     {
         $this->url = $urlBuilder->url($this);
 
@@ -574,7 +574,7 @@ class File implements FileInterface
     /**
      * @inheritDoc
      */
-    public function withUrl(string $url): self
+    public function withUrl(string $url): FileInterface
     {
         $that = clone $this;
         $that->url = $url;
@@ -599,7 +599,7 @@ class File implements FileInterface
             'collection' => $this->collection,
             'readableSize' => $this->readableSize(),
             'variants' => $this->variants,
-            'metaData' => $this->metadata,
+            'metadata' => $this->metadata,
             'url' => $this->url
         ];
     }
