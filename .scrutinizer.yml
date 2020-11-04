@@ -54,7 +54,7 @@ build:
         tests-php8:
             environment:
                 php:
-                    version: '8.0'
+                    version: '8.0.0RC3'
                     ini:
                         phar.readonly: 'Off'
             tests:
