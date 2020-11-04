@@ -22,22 +22,16 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 interface FilenameSanitizerInterface
 {
     /**
+     * Removes or replaces non alphanumeric chars, asserts length.
+     *
      * @param string $filename Filename
      * @return string
      */
     public function sanitize(string $filename): string;
 
     /**
-     * Beautifies a filename to make it better to read
+     * Beautifies a filename to make it better to read.
      *
-     * "file   name.zip" becomes "file-name.zip"
-     * "file___name.zip" becomes "file-name.zip"
-     * "file---name.zip" becomes "file-name.zip"
-     * "file--.--.-.--name.zip" becomes "file.name.zip"
-     * "file...name..zip" becomes "file.name.zip"
-     * ".file-name.-" becomes "file-name"
-     *
-     * @link https://stackoverflow.com/questions/2021624/string-sanitizer-for-filename
      * @param string $filename Filename
      * @return string
      */

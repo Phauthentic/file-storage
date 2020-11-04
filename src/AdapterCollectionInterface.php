@@ -27,6 +27,7 @@ interface AdapterCollectionInterface extends IteratorAggregate
     /**
      * @param string $name Name
      * @param \League\Flysystem\AdapterInterface $adapter Adapter
+     * @return void
      */
     public function add($name, AdapterInterface $adapter);
 

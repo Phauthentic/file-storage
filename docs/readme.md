@@ -7,7 +7,7 @@
  * [The Storage Service](The-Storage-Service.md)
  * [Path Builders](Path-Builders.md)
  * [URL Builders](URL-Builders.md)
-  * [Processors](Processors.md)
+ * [Processors](Processors.md)
  * [Processing Images](Processing-Images.md)
  * [Example](Example.md)
  * [Glossary](Glossary.md)

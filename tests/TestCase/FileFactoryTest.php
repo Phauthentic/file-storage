@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase;
 
+use GuzzleHttp\Psr7\LazyOpenStream;
 use Phauthentic\Infrastructure\Storage\FileFactory;
+use Phauthentic\Infrastructure\Storage\FileInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -31,6 +33,7 @@ class FileFactoryTest extends TestCase
      */
     public function testInvalidUpload(): void
     {
+        /** @var \Psr\Http\Message\UploadedFileInterface|\PHPUnit\Framework\MockObject\MockObject $uploadedFile */
         $uploadedFile = $this->getMockBuilder(UploadedFileInterface::class)
             ->getMock();
 
@@ -47,9 +50,9 @@ class FileFactoryTest extends TestCase
      */
     public function testValidUpload(): void
     {
-        $stream = $this->getMockBuilder(StreamInterface::class)
-            ->getMock();
+        $stream = new LazyOpenStream('composer.json', 'r');
 
+        /** @var \Psr\Http\Message\UploadedFileInterface|\PHPUnit\Framework\MockObject\MockObject $uploadedFile */
         $uploadedFile = $this->getMockBuilder(UploadedFileInterface::class)
             ->getMock();
 
@@ -73,8 +76,8 @@ class FileFactoryTest extends TestCase
             ->method('getStream')
             ->willReturn($stream);
 
-        //$file = FileFactory::fromUploadedFile($uploadedFile, 'local');
+        $file = FileFactory::fromUploadedFile($uploadedFile, 'local');
 
-        //$this->assertInstanceOf(FileInterface::class, $file);
+        $this->assertInstanceOf(FileInterface::class, $file);
     }
 }

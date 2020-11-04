@@ -31,6 +31,7 @@ class PathBuilderTest extends TestCase
      */
     public function testDatePaths(): void
     {
+        /** @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder|\PHPUnit\Framework\MockObject\MockObject $builder */
         $builder = $this->getMockBuilder(PathBuilder::class)
             ->setConstructorArgs([
                 [
@@ -50,7 +51,7 @@ class PathBuilderTest extends TestCase
 
         $result = $builder->path($file);
 
-        $this->assertEquals($this->sanitizeSeparator('2020\01\01\20\00'), $result);
+        $this->assertEquals($this->sanitizeSeparator('2020/01/01/20/00'), $result);
     }
 
     /**
@@ -65,7 +66,7 @@ class PathBuilderTest extends TestCase
         $builder = new PathBuilder();
         $result = $builder->path($file);
 
-        $this->assertEquals($this->sanitizeSeparator('\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.jpg'), $result);
+        $this->assertEquals($this->sanitizeSeparator('/fe/c3/b4/914e151291534253a81e7ee2edc1d973/titus.jpg'), $result);
     }
 
     /**

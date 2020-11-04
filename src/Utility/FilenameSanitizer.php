@@ -85,7 +85,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
      */
     public function __construct(array $config = [])
     {
-        $this->config = array_merge($this->defaultConfig, $config);
+        $this->config = $config + $this->defaultConfig;
     }
 
     /**
@@ -103,7 +103,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
         $regex[] = $this->config['removeControlChars'] === true ? $this->controlChars : '';
         $regex = '~' . implode('|', array_filter($regex)) . '~x';
 
-        return preg_replace($regex, $replacement, $filename);
+        return (string)preg_replace($regex, $replacement, $filename);
     }
 
     /**
@@ -174,7 +174,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
     public function beautify(string $filename): string
     {
         // reduce consecutive characters
-        $filename = preg_replace([
+        $filename = (string)preg_replace([
             // "file   name.zip" becomes "file-name.zip"
             '/ +/',
             // "file___name.zip" becomes "file-name.zip"
@@ -183,7 +183,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
             '/-+/'
         ], '-', $filename);
 
-        $filename = preg_replace([
+        $filename = (string)preg_replace([
             // "file--.--.-.--name.zip" becomes "file.name.zip"
             '/-*\.-*/',
             // "file...name..zip" becomes "file.name.zip"
@@ -206,7 +206,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
     protected function removeAllNonAlphaNumerical(string $string): string
     {
         $pathInfo = PathInfo::for($string);
-        $string = preg_replace('/[^a-zA-Z0-9]/', '', $pathInfo->filename());
+        $string = (string)preg_replace('/[^a-zA-Z0-9]/', '', $pathInfo->filename());
 
         if (!$pathInfo->hasExtension()) {
             return $string;

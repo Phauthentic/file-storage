@@ -1,4 +1,4 @@
-/.idea
+/.idea/
 /.phpunit.result.cache
 /tmp
 /logs
@@ -6,3 +6,4 @@
 /bin
 coverage.xml
 phive*.phar
+/composer.lock
