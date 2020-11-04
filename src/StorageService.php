@@ -122,6 +122,7 @@ class StorageService implements StorageServiceInterface
      * @param string $name
      * @param string $class
      * @param array $options
+     * @return void
      */
     public function addAdapterConfig(string $name, string $class, array $options)
     {

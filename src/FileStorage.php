@@ -23,6 +23,7 @@ use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
+use RuntimeException;
 
 /**
  * File Storage
@@ -117,6 +118,7 @@ class FileStorage implements FileStorageInterface
 
     /**
      * @inheritDoc
+     * @throws \RuntimeException
      */
     public function store(FileInterface $file): FileInterface
     {
@@ -133,7 +135,11 @@ class FileStorage implements FileStorageInterface
         $file = $this->runCallbacks('beforeSave', $file);
 
         $storage = $this->getStorage($file->storage());
-        $storage->writeStream($file->path(), $file->resource(), $config);
+        $resource = $file->resource();
+        if ($resource === null) {
+            throw new RuntimeException('No resource given');
+        }
+        $storage->writeStream($file->path(), $resource, $config);
 
         return $this->runCallbacks('afterSave', $file);
     }

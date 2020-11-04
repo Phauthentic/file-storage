@@ -83,6 +83,8 @@ class StreamWrapper
 
     /**
      * Registers the stream wrapper if needed
+     *
+     * @return void
      */
     public static function register()
     {
@@ -91,9 +93,17 @@ class StreamWrapper
         }
     }
 
+    /**
+     * @param string $path
+     * @param string $mode
+     * @param array $options
+     * @param string $opened_path
+     *
+     * @return bool
+     */
     public function stream_open($path, $mode, $options, &$opened_path)
     {
-        $options = stream_context_get_options($this->context);
+        $options += stream_context_get_options($this->context);
 
         if (!isset($options['guzzle']['stream'])) {
             return false;
@@ -105,26 +115,48 @@ class StreamWrapper
         return true;
     }
 
+    /**
+     * @param int $count
+     *
+     * @return string
+     */
     public function stream_read($count)
     {
         return $this->stream->read($count);
     }
 
+    /**
+     * @param string $data
+     *
+     * @return int
+     */
     public function stream_write($data)
     {
         return (int) $this->stream->write($data);
     }
 
+    /**
+     * @return int
+     */
     public function stream_tell()
     {
         return $this->stream->tell();
     }
 
+    /**
+     * @return bool
+     */
     public function stream_eof()
     {
         return $this->stream->eof();
     }
 
+    /**
+     * @param int $offset
+     * @param int $whence
+     *
+     * @return bool
+     */
     public function stream_seek($offset, $whence)
     {
         $this->stream->seek($offset, $whence);
@@ -132,6 +164,11 @@ class StreamWrapper
         return true;
     }
 
+    /**
+     * @param int $cast_as
+     *
+     * @return resource|null
+     */
     public function stream_cast($cast_as)
     {
         $stream = clone($this->stream);
@@ -139,6 +176,9 @@ class StreamWrapper
         return $stream->detach();
     }
 
+    /**
+     * @return array
+     */
     public function stream_stat()
     {
         static $modeMap = [
@@ -166,6 +206,12 @@ class StreamWrapper
         ];
     }
 
+    /**
+     * @param string $path
+     * @param int $flags
+     *
+     * @return int[]
+     */
     public function url_stat($path, $flags)
     {
         return [

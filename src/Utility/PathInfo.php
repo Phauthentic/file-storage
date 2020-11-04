@@ -27,7 +27,7 @@ class PathInfo
     /** @var string */
     protected $basename;
 
-    /** @var string */
+    /** @var string|null */
     protected $extension;
 
     /** @var string */

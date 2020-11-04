@@ -40,12 +40,14 @@ class ConditionalPathBuilderTest extends TestCase
         $file2 = FileFactory::fromDisk($fixtureFile, 'local')
             ->belongsToModel('Photos', '1');
 
+        /** @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface|\PHPUnit\Framework\MockObject\MockObject $defaultBuilder */
         $defaultBuilder = $this->getMockBuilder(PathBuilderInterface::class)
             ->getMock();
         $defaultBuilder->expects($this->once())
             ->method('path')
             ->willReturn('');
 
+        /** @var \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface|\PHPUnit\Framework\MockObject\MockObject $otherPathBuilder */
         $otherPathBuilder = $this->getMockBuilder(PathBuilderInterface::class)
             ->getMock();
         $otherPathBuilder->expects($this->once())
@@ -86,6 +88,6 @@ class ConditionalPathBuilderTest extends TestCase
         });
 
         $result = $conditionalBuilder->pathForVariant($file, 'resize');
-        $this->assertEquals($this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg'), $result);
+        $this->assertSame($this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg'), $result);
     }
 }

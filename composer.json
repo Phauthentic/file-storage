@@ -20,10 +20,11 @@
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-master"
+        "phauthentic/file-storage-image-processor": "dev-master",
+        "phpunit/phpunit": "^9.0"
     },
     "suggest": {
-        "phauthentic/file-storage-image-processor": "You must install this for image processing"
+        "phauthentic/file-storage-image-processor": "For image processing"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -34,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phauthentic\\Infrastructure\\Storage\\": "src"
+            "Phauthentic\\Infrastructure\\Storage\\": "src/"
         },
         "files": [
             "src/functions.php"
@@ -42,7 +43,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phauthentic\\Test\\": "tests"
+            "Phauthentic\\Test\\": "tests/"
         }
     },
     "scripts": {
@@ -51,35 +52,37 @@
         ],
         "test": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpunit"
+            "phpunit"
         ],
         "test-coverage": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpunit --coverage-text"
+            "phpunit --coverage-text"
         ],
         "test-coverage-html": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpunit --coverage-html ./tmp/coverage"
+            "phpunit --coverage-html tmp/coverage/"
         ],
         "cscheck": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpcs ./src ./tests --standard=./phpcs.xml -s"
+            "phpcs src/ tests/ --standard=phpcs.xml -s"
         ],
         "csfix": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpcbf ./src ./tests --standard=./phpcs.xml"
+            "phpcbf src/ tests/ --standard=phpcs.xml"
         ],
         "analyze": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "./bin/phpstan analyse ./src -l 5"
+            "phpstan analyse src/"
         ],
         "phive": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "php ./config/composer_phive.php"
+            "php config/composer_phive.php"
         ],
         "serve": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "php -S localhost:8081 -t ./public"
-        ]
+            "php -S localhost:8081 -t public/"
+        ],
+        "stan": "phpstan analyse src/",
+        "stan-setup": "cp composer.json composer.backup && composer require --dev phpstan/phpstan:^0.12 vimeo/psalm:^3.0 && mv composer.backup composer.json"
     }
 }

@@ -27,7 +27,7 @@ composer require phauthentic/file-storage
 
 ## Documentation
 
-Please start by reading [docs/index.md](/docs/index.md) in this repository.
+Please start by reading [docs/readme.md](/docs/readme.md) in this repository.
 
 ## Example
 
