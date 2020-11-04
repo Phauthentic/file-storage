@@ -103,7 +103,7 @@ class StreamWrapper
      */
     public function stream_open($path, $mode, $options, &$opened_path)
     {
-        $options += stream_context_get_options($this->context);
+        $options = stream_context_get_options($this->context);
 
         if (!isset($options['guzzle']['stream'])) {
             return false;
