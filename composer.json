@@ -20,8 +20,7 @@
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-master",
-        "phpunit/phpunit": "^9.0"
+        "phauthentic/file-storage-image-processor": "dev-master"
     },
     "suggest": {
         "phauthentic/file-storage-image-processor": "For image processing"
