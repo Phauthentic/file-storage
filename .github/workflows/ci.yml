@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 jobs:
   testsuite:
+    name: Unittests
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -45,7 +46,7 @@ jobs:
 
   cs-stan:
     name: Coding Standard & Static Analysis
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v1
@@ -61,7 +62,7 @@ jobs:
         pecl: false
 
     - name: Run phpcs
-      run: bin/phpcs --report=checkstyle --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/
+      run: bin/phpcs --report=checkstyle --standard=phpcs.xml src/ tests/
 
     - name: Run phpstan
       run: bin/phpstan.phar analyse --error-format=github
