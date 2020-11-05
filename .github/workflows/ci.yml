@@ -32,7 +32,7 @@ jobs:
           composer install
         fi
 
-    - name: Run Phive
+    - name: Phive install
       run: php config/composer_phive.php
 
     - name: Run PHPUnit
@@ -63,6 +63,9 @@ jobs:
         extension-csv: mbstring, intl
         coverage: none
         pecl: false
+
+    - name: Phive install
+      run: php config/composer_phive.php
 
     - name: Run phpcs
       run: bin/phpcs --report=checkstyle --standard=phpcs.xml src/ tests/
