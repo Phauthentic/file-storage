@@ -71,4 +71,4 @@ jobs:
       run: bin/phpcs --report=checkstyle --standard=phpcs.xml src/ tests/
 
     - name: Run phpstan
-      run: bin/phpstan.phar analyse --error-format=github
+      run: bin/phpstan analyse src -l 5 --error-format=github
