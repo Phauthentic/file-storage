@@ -32,9 +32,12 @@ jobs:
           composer install
         fi
 
+    - name: Run Phive
+      run: php config/composer_phive.php
+
     - name: Run PHPUnit
       run: |
-        if [[ ${{ matrix.php-version }} == '7.4']]; then
+        if [[ ${{ matrix.php-version }} == '7.4' ]]; then
           bin/phpunit --coverage-clover=coverage.xml
         else
           bin/phpunit
