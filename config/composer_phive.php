@@ -22,8 +22,8 @@ $keys = [
     '0xCF1A108D0E7AE720'
 ];
 $keys = implode(',', $keys);
-
 $output = '';
-exec('php .' . $ds . 'phive.phar install --target .' . $ds . 'bin --trust-gpg-keys --trust-gpg-keys ' . $keys, $output);
+$command = 'php .' . $ds . 'phive.phar install --target .' . $ds . 'bin --trust-gpg-keys ' . $keys;
+exec($command, $output);
 
 echo implode(PHP_EOL, $output);
