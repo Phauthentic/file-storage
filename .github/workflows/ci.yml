@@ -64,6 +64,9 @@ jobs:
         coverage: none
         tools: pecl
 
+    - name: Composer install
+      run: composer update --prefer-lowest --prefer-stable
+
     - name: Phive install
       run: php config/composer_phive.php
 
