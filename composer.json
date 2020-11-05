@@ -20,7 +20,7 @@
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-master"
+        "phauthentic/file-storage-image-processor": "dev-develop"
     },
     "suggest": {
         "phauthentic/file-storage-image-processor": "You must install this for image processing"
