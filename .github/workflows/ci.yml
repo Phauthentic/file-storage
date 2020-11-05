@@ -68,7 +68,7 @@ jobs:
       run: php config/composer_phive.php
 
     - name: Run phpcs
-      run: bin/phpcs --report=checkstyle --standard=phpcs.xml src/ tests/
+      run: bin/phpcs --version && bin/phpcs --report=checkstyle --standard=phpcs.xml src/ tests/
 
     - name: Run phpstan
-      run: bin/phpstan analyse src -l 5 --error-format=github
+      run: bin/phpstan -V && bin/phpstan analyse src -l 5 --error-format=github
