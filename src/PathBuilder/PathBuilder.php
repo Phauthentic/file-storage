@@ -72,7 +72,7 @@ class PathBuilder implements PathBuilderInterface
      */
     public function __construct(array $config = [])
     {
-        $this->config = array_merge($this->defaultConfig, $config);
+        $this->config = $config + $this->defaultConfig;
 
         if (!$this->config['filenameSanitizer'] instanceof FilenameSanitizerInterface) {
             $this->filenameSanitizer = new FilenameSanitizer();
@@ -150,7 +150,7 @@ class PathBuilder implements PathBuilderInterface
      */
     protected function filename(FileInterface $file, array $options = []): string
     {
-        $config = array_merge($this->config, $options);
+        $config = $options + $this->config;
 
         $pathInfo = PathInfo::for($file->filename());
         $filename = $pathInfo->filename();
@@ -230,7 +230,7 @@ class PathBuilder implements PathBuilderInterface
      */
     protected function buildPath(FileInterface $file, ?string $variant, array $options = []): string
     {
-        $config = array_merge($this->config, $options);
+        $config = $options + $this->config;
         $ds = $this->config['directorySeparator'];
         $filename = $this->filename($file, $options);
         $hashedVariant = substr(hash('sha1', (string)$variant), 0, 6);
@@ -290,6 +290,6 @@ class PathBuilder implements PathBuilderInterface
         );
 
         // Remove double or more separators caused by empty template vars
-        return  preg_replace('/(\\\{2,})|(\/{2,})/', $separator, $result);
+        return (string)preg_replace('/(\\\{2,})|(\/{2,})/', $separator, $result);
     }
 }

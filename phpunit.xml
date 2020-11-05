@@ -11,13 +11,13 @@
          verbose="true"
 >
     <testsuites>
-        <testsuite name="Email">
-            <directory suffix="Test.php">./tests/</directory>
+        <testsuite name="file-storage">
+            <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">./src/</directory>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
     <!--
