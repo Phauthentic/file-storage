@@ -1,0 +1,67 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  testsuite:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.4', '8.0']
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: ${{ matrix.php-version }}
+        extension-csv: mbstring, intl
+        coverage: pcov
+        pecl: false
+
+    - name: Composer install
+      run: |
+        if [[ ${{ matrix.prefer-lowest == 'prefer-lowest' }} ]]; then
+          composer update --prefer-lowest --prefer-stable
+        else
+          composer install
+        fi
+
+    - name: Run PHPUnit
+      run: |
+        if [[ ${{ matrix.php-version }} == '7.4']]; then
+          bin/phpunit --coverage-clover=coverage.xml
+        else
+          bin/phpunit
+        fi
+
+    - name: Code Coverage Report
+      if: success() && matrix.php-version == '7.4'
+      uses: codecov/codecov-action@v1
+
+  cs-stan:
+    name: Coding Standard & Static Analysis
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: '7.4'
+        extension-csv: mbstring, intl
+        coverage: none
+        pecl: false
+
+    - name: Run phpcs
+      run: bin/phpcs --report=checkstyle --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/
+
+    - name: Run phpstan
+      run: bin/phpstan.phar analyse --error-format=github
