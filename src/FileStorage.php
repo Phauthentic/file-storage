@@ -120,9 +120,11 @@ class FileStorage implements FileStorageInterface
      * @inheritDoc
      * @throws \RuntimeException
      */
-    public function store(FileInterface $file): FileInterface
+    public function store(FileInterface $file, ?Config $config = null): FileInterface
     {
-        $config = new Config();
+        if ($config === null) {
+            $config = new Config();
+        }
 
         if ($this->pathBuilder !== null) {
             $file = $file->buildPath($this->pathBuilder);

@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": ">=7.4",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
@@ -20,7 +20,7 @@
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-master"
+        "phauthentic/file-storage-image-processor": "dev-develop"
     },
     "suggest": {
         "phauthentic/file-storage-image-processor": "For image processing"

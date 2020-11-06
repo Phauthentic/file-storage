@@ -6,12 +6,7 @@
  */
 
 $ds = DIRECTORY_SEPARATOR;
-
-if (!file_exists('.' . $ds . 'phive.phar')) {
-    echo 'Downloading Phive (https://phar.io/)...' . PHP_EOL;
-    file_put_contents('.' . $ds . 'phive.phar', file_get_contents('https://phar.io/releases/phive.phar'));
-}
-
+$phiveUrl = 'https://phar.io/releases/phive.phar';
 $keys = [
     '0x4AA394086372C20A',
     '0x8E730BA25823D8B5',
@@ -21,9 +16,18 @@ $keys = [
     '0xBB5F005D6FFDD89E',
     '0xCF1A108D0E7AE720'
 ];
-$keys = implode(',', $keys);
 
+/******************************************************************************/
+
+if (!file_exists('.' . $ds . 'phive.phar')) {
+    echo 'Downloading Phive (' . $phiveUrl . ')...' . PHP_EOL;
+    file_put_contents('.' . $ds . 'phive.phar', file_get_contents($phiveUrl));
+}
+
+$keys = implode(',', $keys);
 $output = '';
-exec('php .' . $ds . 'phive.phar install --target .' . $ds . 'bin --trust-gpg-keys --trust-gpg-keys ' . $keys, $output);
+$command = 'php .' . $ds . 'phive.phar install --target .' . $ds . 'bin --trust-gpg-keys ' . $keys;
+
+exec($command, $output);
 
 echo implode(PHP_EOL, $output);
