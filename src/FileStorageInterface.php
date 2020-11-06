@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Phauthentic\Infrastructure\Storage;
 
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\Config;
 
 /**
  * FileStorageInterface
@@ -28,9 +29,10 @@ interface FileStorageInterface
      * with a path after the file was stored.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
+     * @param \League\Flysystem\Config|null $config Flysystem Config when storing a file
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function store(FileInterface $file): FileInterface;
+    public function store(FileInterface $file, ?Config $config = null): FileInterface;
 
     /**
      * Removes a file from the storage backend
