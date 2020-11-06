@@ -409,12 +409,17 @@ class File implements FileInterface
 
     /**
      * @param array $metadata Meta data
+     * @param bool $overwrite Overwrite whole metadata instead of assoc merging.
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadata(array $metadata): FileInterface
+    public function withMetadata(array $metadata, bool $overwrite = false): FileInterface
     {
         $that = clone $this;
-        $that->metadata = $metadata;
+        if ($overwrite) {
+            $that->metadata = $metadata;
+        } else {
+            $that->metadata = $metadata + $that->metadata;
+        }
 
         return $that;
     }

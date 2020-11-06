@@ -160,7 +160,7 @@ interface FileInterface extends JsonSerializable
      * @param array $metadata Metadata
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadata(array $metadata): FileInterface;
+    public function withMetadata(array $metadata, bool $overwrite = false): FileInterface;
 
     /**
      * Removes all metadata
