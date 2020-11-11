@@ -21,6 +21,12 @@ use RuntimeException;
 /**
  * The original php function has mixed return values, either a resource or
  * boolean false. But we want an exception.
+ *
+ * @param string $filename
+ * @param string $mode
+ * @param bool $useIncludePath
+ * @param mixed $context
+ * @return resource
  */
 function fopen(string $filename, string $mode, bool $useIncludePath = true, $context = null)
 {
@@ -32,7 +38,7 @@ function fopen(string $filename, string $mode, bool $useIncludePath = true, $con
 
     if ($result === false) {
         throw new RuntimeException(sprintf(
-            'Failed to open file `%s` with fopen()',
+            'Failed to open resource `%s`',
             $filename
         ));
     }

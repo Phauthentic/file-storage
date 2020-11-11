@@ -58,7 +58,7 @@ class File implements FileInterface
     protected ?string $extension = null;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected ?string $path = null;
 
@@ -245,7 +245,7 @@ class File implements FileInterface
     public function belongsToModel(string $model, $modelId): FileInterface
     {
         $this->model = $model;
-        $this->modelId = $modelId;
+        $this->modelId = (string)$modelId;
 
         return $this;
     }

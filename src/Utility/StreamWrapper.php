@@ -17,7 +17,8 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
+
+use function \Phauthentic\Infrastructure\Storage\fopen;
 
 /**
  * Converts Guzzle streams into PHP stream resources.
@@ -55,14 +56,7 @@ class StreamWrapper
             );
         }
 
-        $result = \fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
-
-        if ($result === false) {
-            throw new RuntimeException(\sprintf(
-                'Failed to open guzzle://stream with mode %s',
-                $mode
-            ));
-        }
+        $result = fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
 
         return $result;
     }
