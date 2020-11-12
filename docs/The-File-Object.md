@@ -86,7 +86,7 @@ $file
         'one' => 'two',
         'two' => 'one'
     ])
-    ->withMetadataKey('bar', 'foo');
+    ->withMetadataElement('bar', 'foo');
     // removes a specific key
     ->withoutMetadataKey('one');
     // removes all meta data
@@ -100,7 +100,7 @@ $file->metaData();
 ```
 
 ```php
-$file->metaDataKey('foo');
+$file->metadataElement('foo');
 ```
 
 ## Extending functionality

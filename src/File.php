@@ -429,7 +429,7 @@ class File implements FileInterface
      * @param mixed $data Data
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadataKey(string $name, $data): FileInterface
+    public function withMetadataElement(string $name, $data): FileInterface
     {
         $that = clone $this;
         $that->metadata[$name] = $data;
@@ -441,7 +441,7 @@ class File implements FileInterface
      * @param string $name Name
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withoutMetadataKey(string $name): FileInterface
+    public function withoutMetadataElement(string $name): FileInterface
     {
         $that = clone $this;
         unset($that->metadata[$name]);
@@ -466,6 +466,24 @@ class File implements FileInterface
     public function metadata(): array
     {
         return $this->metadata;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws \RuntimeException
+     *
+     * @return mixed
+     */
+    public function metadataElement(string $key)
+    {
+        if (!isset($this->metadata[$key])) {
+            throw new RuntimeException(
+                'Metadata key does not exist'
+            );
+        }
+
+        return $this->metadata[$key];
     }
 
     /**

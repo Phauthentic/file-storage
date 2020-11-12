@@ -134,7 +134,7 @@ $file = FileFactory::fromDisk('./tests/Fixtures/titus.jpg', 'local')
         'one' => 'two',
         'two' => 'one'
     ])
-    ->withMetadataKey('bar', 'foo');
+    ->withMetadataElement('bar', 'foo');
 
 $file = $fileStorage->store($file);
 
