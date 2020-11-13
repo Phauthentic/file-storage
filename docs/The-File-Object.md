@@ -49,7 +49,7 @@ Instead of calling `withFile()` you can also use `withResource()` to re-use an a
 
 You'll also have to add the (uu)id to the file object if your intended path for the file should require it. The same applies to other data that might be relevant for your path.
 
-## Serialization
+## Serialization & Saving the File Object
 
 The file object is serializable to json, and you can call `toArray()` on it to turn it into an array that you can either save in the structure you get or continue transforming it into whatever structure your persistence layer expects.
 

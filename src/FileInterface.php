@@ -204,6 +204,9 @@ interface FileInterface extends JsonSerializable
     /**
      * Returns the path for the file in the storage system
      *
+     * This is probably most of the time a *relative* and not an absolute path
+     * to some root or container depending on the storage backend.
+     *
      * @return string
      */
     public function path(): string;
@@ -219,6 +222,9 @@ interface FileInterface extends JsonSerializable
     /**
      * Builds the path for this file
      *
+     * Keep in mind that the path will depend on the path builder configuration!
+     * The resulting path depends on the builder!
+     *
      * @param \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface $pathBuilder Path Builder
      * @return $this
      */
@@ -226,6 +232,9 @@ interface FileInterface extends JsonSerializable
 
     /**
      * Builds the URL for this file
+     *
+     * Keep in mind that the URL will depend on the URL builder configuration!
+     * The resulting URL depends on the builder!
      *
      * @param \Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface $urlBuilder URL Builder
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
@@ -271,6 +280,9 @@ interface FileInterface extends JsonSerializable
 
     /**
      * Filename
+     *
+     * Be aware that the filename doesn't have to match the name of the actual
+     * file in the storage backend!
      *
      * @param string $filename Filename
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
