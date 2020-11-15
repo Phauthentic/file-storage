@@ -20,7 +20,8 @@
     },
     "require-dev": {
         "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-develop"
+        "phauthentic/file-storage-image-processor": "dev-develop",
+        "spryker/code-sniffer": "^0.15.6"
     },
     "suggest": {
         "phauthentic/file-storage-image-processor": "For image processing"
@@ -63,11 +64,11 @@
         ],
         "cscheck": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "phpcs src/ tests/ --standard=phpcs.xml -s"
+            "phpcs"
         ],
         "csfix": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
-            "phpcbf src/ tests/ --standard=phpcs.xml"
+            "phpcbf"
         ],
         "analyze": [
             "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",

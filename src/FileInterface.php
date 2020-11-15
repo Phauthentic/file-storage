@@ -165,9 +165,9 @@ interface FileInterface extends JsonSerializable
     /**
      * Removes all metadata
      *
-     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     * @return static
      */
-    public function withoutMetadata(): FileInterface;
+    public function withoutMetadata();
 
     /**
      * Adds a single key and value to the metadata array
