@@ -450,9 +450,9 @@ class File implements FileInterface
     }
 
     /**
-     * @return $this
+     * @return static
      */
-    public function withoutMetadata(): self
+    public function withoutMetadata()
     {
         $that = clone $this;
         $that->metadata = [];
