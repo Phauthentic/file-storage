@@ -176,14 +176,14 @@ interface FileInterface extends JsonSerializable
      * @param mixed $data
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadataKey(string $key, $data): FileInterface;
+    public function withMetadataElement(string $key, $data): FileInterface;
 
     /**
      * Removes a key from the metadata array
      * @param string $name Name
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withoutMetadataKey(string $name): FileInterface;
+    public function withoutMetadataElement(string $name): FileInterface;
 
     /**
      * Stream resource of the file to be stored

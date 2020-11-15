@@ -66,7 +66,7 @@ class FileTest extends TestCase
                 'one' => 'two',
                 'two' => 'one'
             ])
-            ->withMetadataKey('bar', 'foo');
+            ->withMetadataElement('bar', 'foo');
 
         $file = $file->buildPath($pathBuilder);
 
@@ -91,7 +91,7 @@ class FileTest extends TestCase
         $this->assertIsArray($file->toArray());
         $this->assertIsString(json_encode($file));
 
-        $file = $file->withoutMetadataKey('bar');
+        $file = $file->withoutMetadataElement('bar');
         $expectedMetadata = [
             'one' => 'two',
             'two' => 'one',
