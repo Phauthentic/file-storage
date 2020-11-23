@@ -31,8 +31,8 @@ interface UrlBuilderInterface
 
    /**
     * @param \Phauthentic\Infrastructure\Storage\FileInterface $file File
-    * @param string $version Version
+    * @param string $variant Version
     * @return string
     */
-    public function urlForVariant(FileInterface $file, string $version): string;
+    public function urlForVariant(FileInterface $file, string $variant): string;
 }
