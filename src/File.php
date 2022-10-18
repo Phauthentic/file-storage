@@ -425,11 +425,9 @@ class File implements FileInterface
     }
 
     /**
-     * @param string $name Name
-     * @param mixed $data Data
-     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     * @inheritDoc
      */
-    public function withMetadataKey(string $name, $data): FileInterface
+    public function withMetadataByKey(string $name, $data): FileInterface
     {
         $that = clone $this;
         $that->metadata[$name] = $data;
@@ -438,10 +436,9 @@ class File implements FileInterface
     }
 
     /**
-     * @param string $name Name
-     * @return \Phauthentic\Infrastructure\Storage\FileInterface
+     * @inheritDoc
      */
-    public function withoutMetadataKey(string $name): FileInterface
+    public function withoutMetadataByKey(string $name): FileInterface
     {
         $that = clone $this;
         unset($that->metadata[$name]);
@@ -450,7 +447,7 @@ class File implements FileInterface
     }
 
     /**
-     * @return $this
+     * @inheritDoc
      */
     public function withoutMetadata(): self
     {
@@ -461,7 +458,7 @@ class File implements FileInterface
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function metadata(): array
     {
@@ -541,6 +538,29 @@ class File implements FileInterface
     }
 
     /**
+     * @param string $key
+     * @param mixed $data;
+     */
+    public function withMetadataKey(string $key, $data): FileInterface
+    {
+        $that = clone $this;
+        $that->metadata[$key] = $data;
+
+        return $that;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withoutMetadataKey(string $key): FileInterface
+    {
+        $that = clone $this;
+        unset($that->metadata[$key]);
+
+        return $that;
+    }
+
+    /**
      * Sets many variants at once
      *
      * @param array $variants Variants
@@ -612,7 +632,7 @@ class File implements FileInterface
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

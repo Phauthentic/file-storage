@@ -19,7 +19,6 @@ namespace Phauthentic\Test\TestCase;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 

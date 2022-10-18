@@ -66,7 +66,7 @@ class FileTest extends TestCase
                 'one' => 'two',
                 'two' => 'one'
             ])
-            ->withMetadataKey('bar', 'foo');
+            ->withMetadataByKey('bar', 'foo');
 
         $file = $file->buildPath($pathBuilder);
 

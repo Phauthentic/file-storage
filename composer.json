@@ -15,12 +15,11 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "phauthentic/file-storage-factories": "dev-develop",
+        "phauthentic/file-storage-factories": "^1.0",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
-        "instituteweb/composer-scripts": "^1.1",
-        "phauthentic/file-storage-image-processor": "dev-develop"
+        "phauthentic/file-storage-image-processor": "^1.0"
     },
     "suggest": {
         "phauthentic/file-storage-image-processor": "For image processing"
@@ -50,31 +49,24 @@
             "php config/composer_post_install.php"
         ],
         "test": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpunit"
         ],
         "test-coverage": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpunit --coverage-text"
         ],
         "test-coverage-html": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpunit --coverage-html tmp/coverage/"
         ],
         "cscheck": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpcs src/ tests/ --standard=phpcs.xml -s"
         ],
         "csfix": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpcbf src/ tests/ --standard=phpcs.xml"
         ],
         "analyze": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "phpstan analyse src/"
         ],
         "phive": [
-            "\\InstituteWeb\\ComposerScripts\\ImprovedScriptExecution::apply",
             "php config/composer_phive.php"
         ]
     }

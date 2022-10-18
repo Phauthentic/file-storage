@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Phauthentic\Infrastructure\Storage;
 
+use Iterator;
 use League\Flysystem\AdapterInterface;
 use ArrayIterator;
 use RuntimeException;
@@ -119,7 +120,7 @@ class AdapterCollection implements AdapterCollectionInterface
     /**
      * @inheritDoc
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->adapters);
     }

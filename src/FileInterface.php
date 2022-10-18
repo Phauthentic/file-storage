@@ -70,7 +70,7 @@ interface FileInterface extends JsonSerializable
     /**
      * Gets the metadata array
      *
-     * @return array
+     * @return array<mixed, mixed>
      */
     public function metadata(): array;
 
@@ -157,7 +157,8 @@ interface FileInterface extends JsonSerializable
     /**
      * Adds (replaces) the existing metadata
      *
-     * @param array $metadata Metadata
+     * @param array<mixed, mixed> $metadata Metadata
+     * @param bool $overwrite
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
     public function withMetadata(array $metadata, bool $overwrite = false): FileInterface;
@@ -176,14 +177,14 @@ interface FileInterface extends JsonSerializable
      * @param mixed $data
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withMetadataKey(string $key, $data): FileInterface;
+    public function withMetadataByKey(string $key, $data): FileInterface;
 
     /**
      * Removes a key from the metadata array
      * @param string $name Name
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
-    public function withoutMetadataKey(string $name): FileInterface;
+    public function withoutMetadataByKey(string $name): FileInterface;
 
     /**
      * Stream resource of the file to be stored

@@ -58,7 +58,7 @@ class FileStorageTest extends TestCase
         $file = FileFactory::fromDisk($fileOnDisk, 'local')
             ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
             ->belongsToModel('User', '1')
-            ->withMetadataKey('bar', 'foo');
+            ->withMetadataByKey('bar', 'foo');
 
         $file = $fileStorage->store($file);
 
