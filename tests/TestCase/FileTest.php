@@ -16,10 +16,14 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase;
 
+use Phauthentic\Infrastructure\Storage\Exception\InvalidStreamResourceException;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException;
 use Phauthentic\Infrastructure\Storage\File;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileInterface;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
+use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistException as ProcessorVariantDoesNotExistException;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\LocalUrlBuilder;
 use Phauthentic\Infrastructure\Storage\Utility\MimeType;
 use Phauthentic\Infrastructure\Storage\Utility\PathInfo;
 use RuntimeException;
@@ -141,5 +145,196 @@ class FileTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Path has not been set');
         $file->path();
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithFile(): void
+    {
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withFile($fileOnDisk);
+
+        $this->assertIsResource($file->resource());
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithResource(): void
+    {
+        $resource = fopen('php://temp', 'r+');
+
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withResource($resource);
+
+        $this->assertSame($resource, $file->resource());
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithInvalidResourceThrowsException(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local');
+
+        $this->expectException(InvalidStreamResourceException::class);
+
+        $file->withResource('not a resource');
+    }
+
+    /**
+     * @return void
+     */
+    public function testExtension(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local');
+        $this->assertEquals('jpg', $file->extension());
+
+        $file = File::create('test', 1000, 'image/jpeg', 'local');
+        $this->assertNull($file->extension());
+    }
+
+    /**
+     * @return void
+     */
+    public function testReadableSize(): void
+    {
+        // Test bytes
+        $file = File::create('test.jpg', 500, 'image/jpeg', 'local');
+        $this->assertEquals('500B', $file->readableSize());
+
+        // Test kilobytes
+        $file = File::create('test.jpg', 1536, 'image/jpeg', 'local');
+        $this->assertEquals('2kB', $file->readableSize());
+
+        // Test megabytes
+        $file = File::create('test.jpg', 1048576, 'image/jpeg', 'local');
+        $this->assertEquals('1MB', $file->readableSize());
+
+        // Test gigabytes
+        $file = File::create('test.jpg', 1073741824, 'image/jpeg', 'local');
+        $this->assertEquals('1GB', $file->readableSize());
+    }
+
+    /**
+     * @return void
+     */
+    public function testBuildPath(): void
+    {
+        $pathBuilder = new PathBuilder();
+
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012')
+            ->buildPath($pathBuilder);
+
+        $this->assertNotNull($file->path());
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithMetadataOverwrite(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withMetadata(['key1' => 'value1'])
+            ->withMetadata(['key2' => 'value2'], true);
+
+        $this->assertEquals(['key2' => 'value2'], $file->metadata());
+    }
+
+    /**
+     * @return void
+     */
+    public function testVariants(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withVariant('thumb', ['width' => 100, 'height' => 100]);
+
+        $this->assertTrue($file->hasVariants());
+        $this->assertTrue($file->hasVariant('thumb'));
+        $this->assertFalse($file->hasVariant('large'));
+
+        $this->assertEquals(['thumb' => ['width' => 100, 'height' => 100]], $file->variants());
+        $this->assertEquals(['width' => 100, 'height' => 100], $file->variant('thumb'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testVariantDoesNotExistException(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local');
+
+        $this->expectException(VariantDoesNotExistException::class);
+
+        $file->variant('nonexistent');
+    }
+
+    /**
+     * @return void
+     */
+    public function testVariantPaths(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withVariant('thumb', ['path' => '/path/to/thumb.jpg', 'width' => 100])
+            ->withVariant('large', ['width' => 200, 'height' => 200]);
+
+        $paths = $file->variantPaths();
+
+        $this->assertEquals(['thumb' => '/path/to/thumb.jpg'], $paths);
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithVariants(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withVariants([
+                'thumb' => ['width' => 100],
+                'medium' => ['width' => 300]
+            ]);
+
+        $this->assertTrue($file->hasVariant('thumb'));
+        $this->assertTrue($file->hasVariant('medium'));
+
+        // Test merge
+        $file = $file->withVariants(['large' => ['width' => 500]], false);
+        $this->assertFalse($file->hasVariant('thumb'));
+        $this->assertTrue($file->hasVariant('large'));
+    }
+
+    /**
+     * @return void
+     */
+    public function testUrlMethods(): void
+    {
+        $urlBuilder = new LocalUrlBuilder('/files');
+
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withPath('/uploads/test.jpg')
+            ->buildUrl($urlBuilder);
+
+        $this->assertNotEmpty($file->url());
+
+        $file = $file->withUrl('https://example.com/test.jpg');
+        $this->assertEquals('https://example.com/test.jpg', $file->url());
+    }
+
+    /**
+     * @return void
+     */
+    public function testMetadataKeyMethods(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withMetadataKey('test_key', 'test_value');
+
+        $this->assertEquals('test_value', $file->metadata()['test_key']);
+
+        $file = $file->withoutMetadataKey('test_key');
+        $this->assertArrayNotHasKey('test_key', $file->metadata());
     }
 }
