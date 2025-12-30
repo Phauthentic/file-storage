@@ -21,6 +21,7 @@ use League\Flysystem\AdapterInterface;
 
 /**
  * Factory Collection Interface
+ * @extends IteratorAggregate<string, \League\Flysystem\AdapterInterface>
  */
 interface AdapterCollectionInterface extends IteratorAggregate
 {

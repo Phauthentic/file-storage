@@ -100,14 +100,14 @@ interface FileInterface extends JsonSerializable
      * Get a variant
      *
      * @param string $name
-     * @return array
+     * @return array<string, mixed>
      */
     public function variant(string $name): array;
 
     /**
      * Array data structure of the variants
      *
-     * @return array
+     * @return array<string, array<string, mixed>>
      */
     public function variants(): array;
 
@@ -128,13 +128,13 @@ interface FileInterface extends JsonSerializable
 
     /**
      * @param string $name Name
-     * @param array $data Data
+     * @param array<string, mixed> $data Data
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
     public function withVariant(string $name, array $data): FileInterface;
 
     /**
-     * @param array $variants Variants
+     * @param array<string, array<string, mixed>> $variants Variants
      * @param bool $merge Merge variants, default is false
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
@@ -143,14 +143,14 @@ interface FileInterface extends JsonSerializable
     /**
      * Gets the paths for all variants
      *
-     * @return array
+     * @return array<string, string>
      */
     public function variantPaths(): array;
 
     /**
      * Returns an array of the file data
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array;
 

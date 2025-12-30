@@ -24,6 +24,9 @@ use Phauthentic\Infrastructure\Storage\FileInterface;
  */
 class StackProcessor implements ProcessorInterface
 {
+    /**
+     * @var array<int, \Phauthentic\Infrastructure\Storage\Processor\ProcessorInterface>
+     */
     protected array $processors = [];
 
     /**

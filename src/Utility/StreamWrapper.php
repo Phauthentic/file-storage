@@ -90,7 +90,7 @@ class StreamWrapper
     /**
      * @param string $path
      * @param string $mode
-     * @param array $options
+     * @param array<int, mixed> $options
      * @param string $opened_path
      *
      * @return bool
@@ -171,7 +171,7 @@ class StreamWrapper
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function stream_stat()
     {

@@ -51,10 +51,10 @@ interface StorageServiceInterface
      *
      * @param string $name
      * @param string $class
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return void
      */
-    public function addAdapterConfig(string $name, string $class, array $options);
+    public function addAdapterConfig(string $name, string $class, array $options): void;
 
     /**
      * Stores a resource in a storage backend
@@ -63,7 +63,7 @@ interface StorageServiceInterface
      * @param string $path Path where the file is stored
      * @param resource $resource Resource to store
      * @param \League\Flysystem\Config|null $config
-     * @return array
+     * @return array<string, mixed>
      */
     public function storeResource(string $adapter, string $path, $resource, ?Config $config = null): array;
 
@@ -74,7 +74,7 @@ interface StorageServiceInterface
      * @param string $path Path where the file is stored
      * @param string $file File to store
      * @param \League\Flysystem\Config|null $config
-     * @return array
+     * @return array<string, mixed>
      */
     public function storeFile(string $adapter, string $path, string $file, ?Config $config = null): array;
 

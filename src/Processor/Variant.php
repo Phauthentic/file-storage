@@ -22,12 +22,15 @@ namespace Phauthentic\Infrastructure\Storage\Processor;
 class Variant implements VariantInterface
 {
     protected string $name = '';
+    /**
+     * @var array<string, mixed>
+     */
     protected array $operations = [];
     protected string $path = '';
     protected string $url = '';
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

@@ -23,5 +23,4 @@ use RuntimeException;
  */
 class VariantException extends RuntimeException
 {
-
 }

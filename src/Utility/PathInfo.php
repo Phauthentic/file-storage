@@ -22,16 +22,16 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 class PathInfo
 {
     /** @var string */
-    protected $dirname;
+    protected string $dirname;
 
     /** @var string */
-    protected $basename;
+    protected string $basename;
 
     /** @var string|null */
-    protected $extension;
+    protected ?string $extension;
 
     /** @var string */
-    protected $filename;
+    protected string $filename;
 
     /**
      * @param string $path Path
@@ -40,9 +40,9 @@ class PathInfo
     {
         $info = pathinfo($path);
 
-        $this->dirname = $info['dirname'];
+        $this->dirname = $info['dirname'] ?? '';
         $this->basename = $info['basename'];
-        $this->extension = empty($info['extension']) ? null : $info['extension'];
+        $this->extension = empty($info['extension'] ?? null) ? null : $info['extension'];
         $this->filename = $info['filename'];
     }
 

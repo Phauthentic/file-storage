@@ -73,7 +73,7 @@ class File implements FileInterface
     protected string $storage = 'local';
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $metadata = [];
 
@@ -105,7 +105,7 @@ class File implements FileInterface
     protected string $url = '';
 
     /**
-     * @var array
+     * @var array<string, array<string, mixed>>
      */
     protected array $variants = [];
 
@@ -119,8 +119,8 @@ class File implements FileInterface
      * @param string|null $collection Collection name
      * @param string|null $model Model name
      * @param string|null $modelId Model id
-     * @param array $variants Variants
-     * @param array $metadata Meta data
+     * @param array<string, mixed> $variants Variants
+     * @param array<string, mixed> $metadata Meta data
      * @param resource|null $resource
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
@@ -341,10 +341,17 @@ class File implements FileInterface
      */
     public function readableSize(): string
     {
-        $i = floor(log($this->filesize, 1024));
-        $round = (string)round($this->filesize / (1024 ** $i), [0, 0, 2, 2, 3][$i]);
+        $i = (int)floor(log($this->filesize, 1024));
+        $rounds = [0, 0, 2, 2, 3];
+        $units = ['B','kB','MB','GB','TB'];
 
-        return $round . ['B','kB','MB','GB','TB'][$i];
+        if ($i < 0 || $i >= count($rounds)) {
+            $i = 0;
+        }
+
+        $round = (string)round($this->filesize / (1024 ** $i), $rounds[$i]);
+
+        return $round . $units[$i];
     }
 
     /**
@@ -408,7 +415,7 @@ class File implements FileInterface
     }
 
     /**
-     * @param array $metadata Meta data
+     * @param array<string, mixed> $metadata Meta data
      * @param bool $overwrite Overwrite whole metadata instead of assoc merging.
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
@@ -483,7 +490,7 @@ class File implements FileInterface
     }
 
     /**
-     * @return array
+     * @return array<string, array<string, mixed>>
      */
     public function variants(): array
     {
@@ -494,7 +501,7 @@ class File implements FileInterface
      * Returns a variant by name
      *
      * @param string $name Name
-     * @return array
+     * @return array<string, mixed>
      */
     public function variant(string $name): array
     {
@@ -509,7 +516,7 @@ class File implements FileInterface
      * Adds a variant
      *
      * @param string $name Name
-     * @param array $data Data
+     * @param array<string, mixed> $data Data
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
     public function withVariant(string $name, array $data): FileInterface
@@ -523,7 +530,7 @@ class File implements FileInterface
     /**
      * Gets the paths for all variants
      *
-     * @return array
+     * @return array<string, string>
      */
     public function variantPaths(): array
     {
@@ -563,7 +570,7 @@ class File implements FileInterface
     /**
      * Sets many variants at once
      *
-     * @param array $variants Variants
+     * @param array<string, array<string, mixed>> $variants Variants
      * @param bool $merge Merge Variants, default is true
      * @return \Phauthentic\Infrastructure\Storage\FileInterface
      */
@@ -608,7 +615,7 @@ class File implements FileInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -631,6 +638,7 @@ class File implements FileInterface
 
     /**
      * @inheritDoc
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
