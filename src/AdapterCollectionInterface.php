@@ -54,6 +54,7 @@ interface AdapterCollectionInterface extends IteratorAggregate
      * Empties the collection
      *
      * @return void
+     * @phpcs:ignore Squiz.Functions.FunctionDeclaration.Found
      */
     public function empty(): void;
 }
