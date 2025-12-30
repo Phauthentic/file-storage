@@ -34,7 +34,7 @@ class PathBuilder implements PathBuilderInterface
     /**
      * Default settings.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $defaultConfig = [
         'directorySeparator' => DIRECTORY_SEPARATOR,
@@ -56,7 +56,7 @@ class PathBuilder implements PathBuilderInterface
     ];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $config = [];
 
@@ -68,7 +68,7 @@ class PathBuilder implements PathBuilderInterface
     /**
      * Constructor
      *
-     * @param array $config Configuration options.
+     * @param array<string, mixed> $config Configuration options.
      */
     public function __construct(array $config = [])
     {
@@ -127,7 +127,7 @@ class PathBuilder implements PathBuilderInterface
      * Builds the path under which the data gets stored in the storage adapter.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
-     * @param array $options Options
+     * @param array<string, mixed> $options Options
      * @return string
      */
     public function path(FileInterface $file, array $options = []): string
@@ -137,6 +137,7 @@ class PathBuilder implements PathBuilderInterface
 
     /**
      * @inheritDoc
+     * @param array<string, mixed> $options
      */
     public function pathForVariant(FileInterface $file, string $variant, array $options = []): string
     {
@@ -145,7 +146,7 @@ class PathBuilder implements PathBuilderInterface
 
     /**
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
-     * @param array $options Options
+     * @param array<string, mixed> $options Options
      * @return string
      */
     protected function filename(FileInterface $file, array $options = []): string
@@ -227,6 +228,7 @@ class PathBuilder implements PathBuilderInterface
 
     /**
      * @inheritDoc
+     * @param array<string, mixed> $options
      */
     protected function buildPath(FileInterface $file, ?string $variant, array $options = []): string
     {
@@ -273,7 +275,7 @@ class PathBuilder implements PathBuilderInterface
     /**
      * Parses the path string template
      *
-     * @param array $placeholders Assoc array of placeholder to value
+     * @param array<string, string|null> $placeholders Assoc array of placeholder to value
      * @param string $template Template string
      * @param string $separator Directory Separator
      * @return string
@@ -283,9 +285,13 @@ class PathBuilder implements PathBuilderInterface
         string $template,
         string $separator
     ): string {
+        $keys = array_keys($placeholders);
+        $values = array_map(function ($value) {
+            return $value ?? '';
+        }, array_values($placeholders));
         $result = str_replace(
-            array_keys($placeholders),
-            array_values($placeholders),
+            $keys,
+            $values,
             $template
         );
 

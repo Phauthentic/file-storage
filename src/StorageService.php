@@ -32,7 +32,7 @@ use RuntimeException;
 class StorageService implements StorageServiceInterface
 {
     /**
-     * @var array
+     * @var array<string, array{class: string, options: array<string, mixed>}>
      */
     protected array $adapterConfig = [];
 
@@ -101,7 +101,7 @@ class StorageService implements StorageServiceInterface
      *
      * @param string $name Name
      * @param string $adapter Adapter
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return \League\Flysystem\AdapterInterface
      */
     public function loadAdapter(string $name, string $adapter, array $options): AdapterInterface
@@ -121,10 +121,10 @@ class StorageService implements StorageServiceInterface
      *
      * @param string $name
      * @param string $class
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return void
      */
-    public function addAdapterConfig(string $name, string $class, array $options)
+    public function addAdapterConfig(string $name, string $class, array $options): void
     {
         $this->adapterConfig[$name] = [
             'class' => $class,
@@ -135,7 +135,7 @@ class StorageService implements StorageServiceInterface
     /**
      * Sets the adapter configuration to lazy load them later
      *
-     * @param array $config Config
+     * @param array<string, array{class?: string, options?: mixed}> $config Config
      * @return void
      */
     public function setAdapterConfigFromArray(array $config): void
@@ -144,12 +144,22 @@ class StorageService implements StorageServiceInterface
             if (!isset($options['class'])) {
                 throw new RuntimeException('Adapter class or name is missing');
             }
+            $class = (string)$options['class'];
 
-            if (!isset($options['options']) || !is_array($options['options'])) {
+            if (!isset($options['options'])) {
+                throw new RuntimeException('Adapter options must be an array');
+            }
+            $opts = $options['options'];
+            if (!is_array($opts)) {
                 throw new RuntimeException('Adapter options must be an array');
             }
 
-            $this->adapterConfig[$name] = $options;
+            /** @var array{class: string, options: array<string, mixed>} $validatedOptions */
+            $validatedOptions = [
+                'class' => $class,
+                'options' => $opts
+            ];
+            $this->adapterConfig[$name] = $validatedOptions;
         }
     }
 
@@ -157,7 +167,7 @@ class StorageService implements StorageServiceInterface
      * @param \League\Flysystem\Config|null $config Config
      * @return \League\Flysystem\Config
      */
-    protected function makeConfigIfNeeded(?Config $config)
+    protected function makeConfigIfNeeded(?Config $config): Config
     {
         if ($config === null) {
             $config = new Config();
@@ -168,6 +178,7 @@ class StorageService implements StorageServiceInterface
 
     /**
      * @inheritDoc
+     * @return array<string, mixed>
      */
     public function storeResource(string $adapter, string $path, $resource, ?Config $config = null): array
     {
@@ -187,11 +198,19 @@ class StorageService implements StorageServiceInterface
 
     /**
      * @inheritDoc
+     * @return array<string, mixed>
      */
     public function storeFile(string $adapter, string $path, string $file, ?Config $config = null): array
     {
         $config = $this->makeConfigIfNeeded($config);
-        $result = $this->adapter($adapter)->write($path, file_get_contents($file), $config);
+        $contents = file_get_contents($file);
+        if ($contents === false) {
+            throw new StorageException(sprintf(
+                'Failed to read file contents from `%s`',
+                $file
+            ));
+        }
+        $result = $this->adapter($adapter)->write($path, $contents, $config);
 
         if ($result === false) {
             throw new StorageException(sprintf(
@@ -212,7 +231,9 @@ class StorageService implements StorageServiceInterface
      */
     public function fileExists(string $adapter, string $path): bool
     {
-        return $this->adapter($adapter)->has($path);
+        $result = $this->adapter($adapter)->has($path);
+
+        return (bool)$result;
     }
 
     /**

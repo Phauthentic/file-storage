@@ -59,7 +59,15 @@ class FileFactory implements FileFactoryInterface
 
         $info = PathInfo::for($path);
         $filesize = filesize($path);
-        $mimeType = MimeType::byExtension($info->extension());
+        if ($filesize === false) {
+            throw new RuntimeException(sprintf('Failed to get file size for: %s', $path));
+        }
+
+        $extension = $info->extension();
+        $mimeType = $extension !== null ? MimeType::byExtension($extension) : 'application/octet-stream';
+        if ($mimeType === null) {
+            $mimeType = 'application/octet-stream';
+        }
 
         $file = File::create(
             $info->basename(),

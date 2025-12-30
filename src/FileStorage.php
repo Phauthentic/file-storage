@@ -31,7 +31,7 @@ use RuntimeException;
 class FileStorage implements FileStorageInterface
 {
     /**
-     * @var array
+     * @var array<string, array<int, callable>>
      */
     protected array $callbacks = [
         'beforeSave' => [],
@@ -94,7 +94,7 @@ class FileStorage implements FileStorageInterface
      * @param callable $callable Callable
      * @return void
      */
-    public function addCallback($name, callable $callable): void
+    public function addCallback(string $name, callable $callable): void
     {
         $this->checkCallbackName($name);
         $this->callbacks[$name][] = $callable;

@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Phauthentic\Test\TestCase;
 
 use GuzzleHttp\Psr7\LazyOpenStream;
+use Phauthentic\Infrastructure\Storage\Exception\FileDoesNotExistException;
+use Phauthentic\Infrastructure\Storage\Exception\FileNotReadableException;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\FileInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -78,5 +80,54 @@ class FileFactoryTest extends TestCase
         $file = FileFactory::fromUploadedFile($uploadedFile, 'local');
 
         $this->assertInstanceOf(FileInterface::class, $file);
+    }
+
+    /**
+     * @return void
+     */
+    public function testFromDisk(): void
+    {
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+
+        $file = FileFactory::fromDisk($fileOnDisk, 'local');
+
+        $this->assertInstanceOf(FileInterface::class, $file);
+        $this->assertEquals('titus.jpg', $file->filename());
+        $this->assertEquals(332643, $file->filesize());
+        $this->assertEquals('image/jpeg', $file->mimeType());
+        $this->assertTrue(is_resource($file->resource()));
+    }
+
+    /**
+     * @return void
+     */
+    public function testFromDiskFileDoesNotExist(): void
+    {
+        $nonExistentFile = '/path/to/nonexistent/file.jpg';
+
+        $this->expectException(FileDoesNotExistException::class);
+        FileFactory::fromDisk($nonExistentFile, 'local');
+    }
+
+    /**
+     * @return void
+     */
+    public function testFromDiskFileNotReadable(): void
+    {
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+
+        // Create a temporary file and make it unreadable
+        $tempFile = tempnam(sys_get_temp_dir(), 'test');
+        file_put_contents($tempFile, 'test content');
+        chmod($tempFile, 0000); // Make it unreadable
+
+        $this->expectException(FileNotReadableException::class);
+        try {
+            FileFactory::fromDisk($tempFile, 'local');
+        } finally {
+            // Clean up
+            chmod($tempFile, 0644); // Restore permissions for cleanup
+            unlink($tempFile);
+        }
     }
 }

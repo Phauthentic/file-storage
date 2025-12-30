@@ -30,7 +30,7 @@ use RuntimeException;
 class MimeType
 {
     /**
-     * @var array
+     * @var array<string, string>
      */
     protected static array $extensionToMimeTypeMap = [
         'hqx' => 'application/mac-binhex40',
@@ -254,7 +254,7 @@ class MimeType
      * @param string $extension
      * @return string|null MIME Type or NULL if no extension detected
      */
-    public static function byExtension($extension): ?string
+    public static function byExtension(string $extension): ?string
     {
         return static::$extensionToMimeTypeMap[$extension] ?? 'text/plain';
     }
@@ -263,7 +263,7 @@ class MimeType
      * @param string $filename
      * @return string|null MIME Type or NULL if no extension detected
      */
-    public static function byFilename($filename): ?string
+    public static function byFilename(string $filename): ?string
     {
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -271,7 +271,7 @@ class MimeType
     }
 
     /**
-     * @return array Map of file extension to MIME Type
+     * @return array<string, string> Map of file extension to MIME Type
      */
     public static function getExtensionToMimeTypeMap(): array
     {

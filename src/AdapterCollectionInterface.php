@@ -21,6 +21,7 @@ use League\Flysystem\AdapterInterface;
 
 /**
  * Factory Collection Interface
+ * @extends IteratorAggregate<string, \League\Flysystem\AdapterInterface>
  */
 interface AdapterCollectionInterface extends IteratorAggregate
 {
@@ -54,5 +55,6 @@ interface AdapterCollectionInterface extends IteratorAggregate
      *
      * @return void
      */
+    // phpcs:ignore Squiz.Functions.FunctionDeclaration.Found -- empty() is valid method name in PHP 7.4+
     public function empty(): void;
 }

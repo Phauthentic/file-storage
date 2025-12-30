@@ -29,7 +29,7 @@ use Phauthentic\Infrastructure\Storage\FileInterface;
 class ConditionalPathBuilder implements PathBuilderInterface
 {
     /**
-     * @var array
+     * @var array<int, array{callable: callable, pathBuilder: \Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilderInterface}>
      */
     protected array $pathBuilders = [];
 
@@ -63,6 +63,7 @@ class ConditionalPathBuilder implements PathBuilderInterface
 
     /**
      * @inheritDoc
+     * @param array<string, mixed> $options
      */
     public function path(FileInterface $file, array $options = []): string
     {
@@ -77,6 +78,7 @@ class ConditionalPathBuilder implements PathBuilderInterface
 
     /**
      * @inheritDoc
+     * @param array<string, mixed> $options
      */
     public function pathForVariant(FileInterface $file, string $name, array $options = []): string
     {

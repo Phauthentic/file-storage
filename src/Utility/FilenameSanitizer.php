@@ -24,12 +24,12 @@ namespace Phauthentic\Infrastructure\Storage\Utility;
 class FilenameSanitizer implements FilenameSanitizerInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $config = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $defaultConfig = [
         'lowercase' => false,
@@ -81,7 +81,7 @@ class FilenameSanitizer implements FilenameSanitizerInterface
     protected string $controlChars = '[\x00-\x1F]';
 
     /**
-     * @param array $config Config array
+     * @param array<string, mixed> $config Config array
      */
     public function __construct(array $config = [])
     {
@@ -147,11 +147,15 @@ class FilenameSanitizer implements FilenameSanitizerInterface
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $length = $maxLength - ($ext ? strlen($ext) + 1 : 0);
 
+        $encoding = mb_detect_encoding($filename);
+        if ($encoding === false) {
+            $encoding = null;
+        }
         $filename = mb_strcut(
             pathinfo($filename, PATHINFO_FILENAME),
             0,
             $length,
-            mb_detect_encoding($filename)
+            $encoding
         );
 
         return $filename . ($ext ? '.' . $ext : '');
@@ -191,7 +195,11 @@ class FilenameSanitizer implements FilenameSanitizerInterface
         ], '.', $filename);
 
         // lowercase for windows/unix interoperability http://support.microsoft.com/kb/100625
-        $filename = mb_strtolower($filename, mb_detect_encoding($filename));
+        $encoding = mb_detect_encoding($filename);
+        if ($encoding === false) {
+            $encoding = null;
+        }
+        $filename = mb_strtolower($filename, $encoding);
 
         // ".file-name.-" becomes "file-name"
         $filename = trim($filename, '.-');

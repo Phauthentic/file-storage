@@ -50,4 +50,20 @@ class VariantTest extends TestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * @return void
+     */
+    public function testWithUrl(): void
+    {
+        $variant = (new class () extends Variant {
+            protected string $name = 'test';
+        });
+
+        $this->assertEquals('', $variant->toArray()['url']);
+
+        $variant = $variant->withUrl('/test/url.jpg');
+
+        $this->assertEquals('/test/url.jpg', $variant->toArray()['url']);
+    }
 }

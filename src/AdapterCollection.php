@@ -27,7 +27,7 @@ use RuntimeException;
 class AdapterCollection implements AdapterCollectionInterface
 {
     /**
-     * @var array
+     * @var array<string, \League\Flysystem\AdapterInterface>
      */
     protected array $adapters = [];
 
@@ -95,13 +95,14 @@ class AdapterCollection implements AdapterCollectionInterface
      *
      * @return void
      */
+    // phpcs:ignore Squiz.Functions.FunctionDeclaration.Found -- empty() is valid method name in PHP 7.4+
     public function empty(): void
     {
-        unset($this->adapters);
+        $this->adapters = [];
     }
 
     /**
-     * @return array
+     * @return array<string, string>
      */
     public function getNameToClassmap(): array
     {

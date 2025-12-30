@@ -90,4 +90,30 @@ class ConditionalPathBuilderTest extends TestCase
         $result = $conditionalBuilder->pathForVariant($file, 'resize');
         $this->assertSame($this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg'), $result);
     }
+
+    /**
+     * @return void
+     */
+    public function testPathForVariantWithMatchingCondition(): void
+    {
+        $fixtureFile = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fixtureFile, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->belongsToModel('User', '1')
+            ->withVariant('resize', [
+                'operations' => [
+                    'resize' => [100, 100]
+                ]
+            ]);
+
+        $defaultBuilder = new PathBuilder();
+        $conditionalPathBuilder = new PathBuilder();
+        $conditionalBuilder = new ConditionalPathBuilder($defaultBuilder);
+        $conditionalBuilder->addPathBuilder($conditionalPathBuilder, function (FileInterface $file) {
+            return $file->model() === 'User'; // This should match
+        });
+
+        $result = $conditionalBuilder->pathForVariant($file, 'resize');
+        $this->assertSame($this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.73db01.jpg'), $result);
+    }
 }

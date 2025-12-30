@@ -27,7 +27,7 @@ interface PathBuilderInterface
      * Builds the path under which the data gets stored in the storage adapter.
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return string
      */
     public function path(FileInterface $file, array $options = []): string;
@@ -39,7 +39,7 @@ interface PathBuilderInterface
      *
      * @param \Phauthentic\Infrastructure\Storage\FileInterface $file
      * @param string $name Name of the operation
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return string
      */
     public function pathForVariant(FileInterface $file, string $name, array $options = []): string;

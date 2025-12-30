@@ -55,4 +55,86 @@ class LocalUrlBuilderTest extends TestCase
         $result = $urlBuilder->urlForVariant($file, 'crop');
         $this->assertEquals('/User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.crop.jpg', $result);
     }
+
+    /**
+     * @return void
+     */
+    public function testUrlForVariantNonExistent(): void
+    {
+        $pathBuilder = new PathBuilder();
+        $urlBuilder = new LocalUrlBuilder('/files');
+
+        $file = FileFactory::fromDisk($this->getFixtureFile('titus.jpg'), 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->withFilename('foobar.jpg')
+            ->addToCollection('avatar')
+            ->belongsToModel('User', '1')
+            ->buildPath($pathBuilder);
+
+        $result = $urlBuilder->urlForVariant($file, 'nonexistent');
+        $this->assertEquals('', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testWindowsPathHandling(): void
+    {
+        $pathBuilder = new PathBuilder();
+        $urlBuilder = new LocalUrlBuilder('/files');
+
+        $file = FileFactory::fromDisk($this->getFixtureFile('titus.jpg'), 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->withFilename('foobar.jpg')
+            ->addToCollection('avatar')
+            ->belongsToModel('User', '1')
+            ->buildPath($pathBuilder);
+
+        // Simulate Windows path (with backslashes)
+        $file = $file->withPath('/User\\fe\\c3\\b4\\914e151291534253a81e7ee2edc1d973\\foobar.jpg');
+
+        $result = $urlBuilder->url($file);
+        // Should convert backslashes to forward slashes
+        $this->assertEquals('/files/User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.jpg', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testEmptyBasePath(): void
+    {
+        $pathBuilder = new PathBuilder();
+        $urlBuilder = new LocalUrlBuilder('');
+
+        $file = FileFactory::fromDisk($this->getFixtureFile('titus.jpg'), 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->withFilename('foobar.jpg')
+            ->addToCollection('avatar')
+            ->belongsToModel('User', '1')
+            ->buildPath($pathBuilder);
+
+        $result = $urlBuilder->url($file);
+        $this->assertEquals('User/fe/c3/b4/914e151291534253a81e7ee2edc1d973/foobar.jpg', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testPathsWithSpecialCharacters(): void
+    {
+        $pathBuilder = new PathBuilder();
+        $urlBuilder = new LocalUrlBuilder('/files');
+
+        $file = FileFactory::fromDisk($this->getFixtureFile('titus.jpg'), 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->withFilename('test file with spaces.jpg')
+            ->addToCollection('test collection')
+            ->belongsToModel('Test Model', '1')
+            ->buildPath($pathBuilder);
+
+        $result = $urlBuilder->url($file);
+        $this->assertStringStartsWith('/files', $result);
+        // Filename gets sanitized, so spaces become hyphens
+        $this->assertStringEndsWith('test-file-with-spaces.jpg', $result);
+    }
 }
