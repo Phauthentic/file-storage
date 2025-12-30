@@ -19,6 +19,7 @@ namespace Phauthentic\Test\TestCase\PathBuilder;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariantCollection;
+use Phauthentic\Infrastructure\Storage\Utility\FilenameSanitizer;
 use Phauthentic\Test\TestCase\TestCase;
 
 /**
@@ -101,5 +102,64 @@ class PathBuilderTest extends TestCase
             $this->sanitizeSeparator('User\fe\c3\b4\914e151291534253a81e7ee2edc1d973\titus.7ae239.jpg'),
             $result
         );
+    }
+
+    /**
+     * @return void
+     */
+    public function testSetters(): void
+    {
+        $builder = new PathBuilder();
+
+        $sanitizer = new FilenameSanitizer();
+        $result = $builder->setFilenameSanitizer($sanitizer);
+        $this->assertSame($builder, $result);
+
+        $result = $builder->setPathTemplate('{model}/{filename}');
+        $this->assertSame($builder, $result);
+
+        $result = $builder->setVariantPathTemplate('{model}/{filename}.{variant}');
+        $this->assertSame($builder, $result);
+
+        $result = $builder->setCustomDateFormat('Y-m-d H:i:s');
+        $this->assertSame($builder, $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCustomTemplates(): void
+    {
+        $file = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($file, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->belongsToModel('User', '1');
+
+        $builder = new PathBuilder();
+        $builder->setPathTemplate('{model}/{filename}');
+
+        $result = $builder->path($file);
+        $this->assertEquals('User/titus', $result);
+
+        $builder->setVariantPathTemplate('{model}/{filename}.{variant}.{extension}');
+        $result = $builder->pathForVariant($file, 'thumb');
+        $this->assertEquals('User/titus.thumb.jpg', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testFilenameWithoutExtension(): void
+    {
+        $file = FileFactory::fromDisk($this->getFixtureFile('titus.jpg'), 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d973')
+            ->belongsToModel('User', '1')
+            ->withFilename('testfile'); // No extension
+
+        $builder = new PathBuilder();
+        $builder->setPathTemplate('{filename}.{extension}');
+
+        $result = $builder->path($file);
+        $this->assertEquals('testfile', $result);
     }
 }
