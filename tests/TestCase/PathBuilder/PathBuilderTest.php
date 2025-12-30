@@ -41,7 +41,7 @@ class PathBuilderTest extends TestCase
                     'pathTemplate' => '{year}{ds}{month}{ds}{day}{ds}{hour}{ds}{minute}'
                 ]
             ])
-            ->setMethods(['getDateObject'])
+            ->onlyMethods(['getDateObject'])
             ->getMock();
 
         $builder->expects($this->any())

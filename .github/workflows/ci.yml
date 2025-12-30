@@ -32,9 +32,6 @@ jobs:
           composer install
         fi
 
-    - name: Phive install
-      run: php config/composer_phive.php
-
     - name: Run PHPUnit
       run: |
         if [[ ${{ matrix.php-version }} == '7.4' ]]; then

@@ -21,6 +21,7 @@
     "require-dev": {
         "phauthentic/file-storage-image-processor": "^1.0",
         "phpstan/phpstan": "^1.10 || ^2.0",
+        "phpunit/phpunit": "^9.5 || ^10.0 || ^11.0 || ^12.0",
         "squizlabs/php_codesniffer": "^3.7 || ^4.0"
     },
     "suggest": {
@@ -47,9 +48,6 @@
         }
     },
     "scripts": {
-        "post-install-cmd": [
-            "php config/composer_post_install.php"
-        ],
         "test": [
             "phpunit"
         ],
@@ -67,9 +65,6 @@
         ],
         "analyze": [
             "phpstan analyse src/"
-        ],
-        "phive": [
-            "php config/composer_phive.php"
         ]
     }
 }
