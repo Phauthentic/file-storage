@@ -123,7 +123,8 @@ class FileStorageTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid callback `invalidCallback`, only beforeSave, afterSave, beforeRemove, afterRemove are valid');
 
-        $fileStorage->addCallback('invalidCallback', function () {});
+        $fileStorage->addCallback('invalidCallback', function () {
+        });
     }
 
     /**

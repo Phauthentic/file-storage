@@ -22,7 +22,7 @@ use RuntimeException;
 /**
  * Functions Test
  */
-class functionsTest extends TestCase
+class FunctionsTest extends TestCase
 {
     /**
      * @return void
