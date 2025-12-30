@@ -94,8 +94,8 @@ class AdapterCollection implements AdapterCollectionInterface
      * Empties the collection
      *
      * @return void
-     * @phpcs:ignore Squiz.Functions.FunctionDeclaration.Found
      */
+    // phpcs:ignore Squiz.Functions.FunctionDeclaration.Found -- empty() is valid method name in PHP 7.4+
     public function empty(): void
     {
         $this->adapters = [];
