@@ -536,7 +536,7 @@ class File implements FileInterface
     {
         $paths = [];
         foreach ($this->variants as $variant => $data) {
-            if (isset($data['path'])) {
+            if (!empty($data['path'])) {
                 $paths[$variant] = $data['path'];
             }
         }

@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Phauthentic\Test\TestCase\PathBuilder;
 
+use Phauthentic\Infrastructure\Storage\File;
+use InvalidArgumentException;
 use Phauthentic\Infrastructure\Storage\FileFactory;
 use Phauthentic\Infrastructure\Storage\PathBuilder\PathBuilder;
 use Phauthentic\Infrastructure\Storage\Processor\Image\ImageVariantCollection;
@@ -161,5 +163,112 @@ class PathBuilderTest extends TestCase
 
         $result = $builder->path($file);
         $this->assertEquals('testfile', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testRandomPathWithCallable(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012');
+
+        // Create a subclass to test callable randomPath
+        $builder = new class extends PathBuilder {
+            private $callable;
+
+            public function setRandomPathCallable(callable $callable): void
+            {
+                $this->callable = $callable;
+            }
+
+            protected function randomPath($string, $level = 3, $method = 'sha1'): string
+            {
+                if ($this->callable) {
+                    return ($this->callable)($string, $level);
+                }
+                return parent::randomPath($string, $level, $method);
+            }
+        };
+
+        $builder->setRandomPathCallable(function ($string, $level) {
+            $path = '';
+            for ($i = 0; $i < $level; $i++) {
+                $path .= 'custom' . DIRECTORY_SEPARATOR;
+            }
+            return rtrim($path, DIRECTORY_SEPARATOR);
+        });
+
+        $builder->setPathTemplate('{randomPath}{filename}.{extension}');
+
+        $result = $builder->path($file);
+        $this->assertEquals('custom/custom/customtest.jpg', $result);
+    }
+
+
+    /**
+     * @return void
+     */
+    public function testTemplateParsingEmptyPlaceholders(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012');
+
+        $builder = new PathBuilder();
+        $builder->setPathTemplate('{model}/{collection}/{randomPath}{filename}.{extension}');
+
+        $result = $builder->path($file);
+        // Empty placeholders should result in extra separators that get cleaned up
+        $this->assertStringNotContainsString('//', $result);
+        $this->assertEquals('/80/e8/3atest.jpg', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testTemplateParsingDoubleSeparators(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012');
+
+        $builder = new PathBuilder();
+        $builder->setPathTemplate('{ds}{ds}{randomPath}{ds}{ds}{filename}.{extension}');
+
+        $result = $builder->path($file);
+        // Double separators should be cleaned up
+        $this->assertStringNotContainsString('//', $result);
+        $this->assertEquals('/80/e8/3a/test.jpg', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testTemplateParsingEndingWithDot(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012');
+
+        $builder = new PathBuilder();
+        $builder->setPathTemplate('{filename}.');
+
+        $result = $builder->path($file);
+        // Path ending with dot should have the dot removed if no extension
+        $this->assertEquals('test', $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testPathForVariant(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012')
+            ->withVariant('thumb', ['width' => 100]);
+
+        $builder = new PathBuilder();
+        $builder->setVariantPathTemplate('{randomPath}/{filename}.thumb.{extension}');
+
+        $result = $builder->pathForVariant($file, 'thumb');
+        $this->assertEquals('80/e8/3a/test.thumb.jpg', $result);
     }
 }

@@ -337,4 +337,156 @@ class FileTest extends TestCase
         $file = $file->withoutMetadataKey('test_key');
         $this->assertArrayNotHasKey('test_key', $file->metadata());
     }
+
+    /**
+     * @return void
+     */
+    public function testBelongsToModel(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->belongsToModel('User', 123);
+
+        $this->assertEquals('User', $file->model());
+        $this->assertEquals('123', $file->modelId());
+    }
+
+    /**
+     * @return void
+     */
+    public function testAddToCollection(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->addToCollection('avatars');
+
+        $this->assertEquals('avatars', $file->collection());
+    }
+
+
+    /**
+     * @return void
+     */
+    public function testReadableSizeEdgeCases(): void
+    {
+        // Test zero size file
+        $file = File::create('test.jpg', 0, 'image/jpeg', 'local');
+        $this->assertEquals('0B', $file->readableSize());
+
+        // Test boundary values around 1024
+        $file = File::create('test.jpg', 1023, 'image/jpeg', 'local');
+        $this->assertEquals('1023B', $file->readableSize());
+
+        $file = File::create('test.jpg', 1024, 'image/jpeg', 'local');
+        $this->assertEquals('1kB', $file->readableSize());
+
+        $file = File::create('test.jpg', 1025, 'image/jpeg', 'local');
+        $this->assertEquals('1kB', $file->readableSize());
+
+        // Test boundary values around 1048576 (1MB)
+        $file = File::create('test.jpg', 1048575, 'image/jpeg', 'local');
+        $this->assertEquals('1024kB', $file->readableSize());
+
+        $file = File::create('test.jpg', 1048576, 'image/jpeg', 'local');
+        $this->assertEquals('1MB', $file->readableSize());
+
+        // Test very large file (1TB)
+        $file = File::create('test.jpg', 1099511627776, 'image/jpeg', 'local');
+        $this->assertEquals('1TB', $file->readableSize());
+
+        // Test edge case with large number
+        $file = File::create('test.jpg', PHP_INT_MAX, 'image/jpeg', 'local');
+        $size = $file->readableSize();
+        $this->assertIsString($size);
+        $this->assertGreaterThan(0, strlen($size));
+    }
+
+    /**
+     * @return void
+     */
+    public function testWithVariantsMergeComprehensive(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withVariants([
+                'thumb' => ['width' => 100, 'height' => 100, 'path' => 'thumb.jpg'],
+                'medium' => ['width' => 300, 'height' => 300, 'path' => 'medium.jpg']
+            ]);
+
+        $this->assertTrue($file->hasVariant('thumb'));
+        $this->assertTrue($file->hasVariant('medium'));
+
+        // Test merge = true (default) - should merge with existing variants
+        $file = $file->withVariants([
+            'medium' => ['width' => 350, 'height' => 350, 'path' => 'medium_updated.jpg'], // Update existing
+            'large' => ['width' => 800, 'height' => 600, 'path' => 'large.jpg'] // Add new
+        ], true);
+
+        $this->assertTrue($file->hasVariant('thumb')); // Should still exist
+        $this->assertEquals(['width' => 800, 'height' => 600, 'path' => 'large.jpg'], $file->variant('large')); // New variant
+        // array_merge_recursive merges arrays, so medium will have arrays for each property
+        $mediumVariant = $file->variant('medium');
+        $this->assertContains(350, $mediumVariant['width']);
+        $this->assertContains(300, $mediumVariant['width']); // Original value
+        $this->assertContains('medium_updated.jpg', $mediumVariant['path']);
+        $this->assertContains('medium.jpg', $mediumVariant['path']); // Original value
+    }
+
+    /**
+     * @return void
+     */
+    public function testVariantPathsWithEmptyPaths(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withVariant('thumb', ['path' => 'thumb.jpg', 'width' => 100])
+            ->withVariant('medium', ['width' => 300, 'height' => 300]) // No path
+            ->withVariant('large', ['path' => '', 'width' => 800]) // Empty path
+            ->withVariant('xlarge', ['path' => 'xlarge.jpg', 'width' => 1200]);
+
+        $paths = $file->variantPaths();
+
+        $expected = [
+            'thumb' => 'thumb.jpg',
+            'xlarge' => 'xlarge.jpg'
+            // Empty paths are excluded
+        ];
+
+        $this->assertEquals($expected, $paths);
+    }
+
+    /**
+     * @return void
+     */
+    public function testJsonSerialize(): void
+    {
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withUuid('12345678-1234-1234-1234-123456789012')
+            ->belongsToModel('User', 1)
+            ->addToCollection('avatars')
+            ->withPath('/uploads/test.jpg')
+            ->withMetadata(['key' => 'value'])
+            ->withVariant('thumb', ['width' => 100, 'path' => 'thumb.jpg']);
+
+        $serialized = $file->jsonSerialize();
+        $expectedKeys = [
+            'uuid', 'filename', 'filesize', 'mimeType', 'extension',
+            'path', 'model', 'modelId', 'collection', 'readableSize',
+            'variants', 'metadata', 'url'
+        ];
+
+        foreach ($expectedKeys as $key) {
+            $this->assertArrayHasKey($key, $serialized);
+        }
+
+        $this->assertEquals('12345678-1234-1234-1234-123456789012', $serialized['uuid']);
+        $this->assertEquals('test.jpg', $serialized['filename']);
+        $this->assertEquals(1000, $serialized['filesize']);
+        $this->assertEquals('image/jpeg', $serialized['mimeType']);
+        $this->assertEquals('jpg', $serialized['extension']);
+        $this->assertEquals('/uploads/test.jpg', $serialized['path']);
+        $this->assertEquals('User', $serialized['model']);
+        $this->assertEquals('1', $serialized['modelId']);
+        $this->assertEquals('avatars', $serialized['collection']);
+        $this->assertEquals('1000B', $serialized['readableSize']);
+        $this->assertEquals(['key' => 'value'], $serialized['metadata']);
+        $this->assertArrayHasKey('thumb', $serialized['variants']);
+        $this->assertEquals('', $serialized['url']);
+    }
 }

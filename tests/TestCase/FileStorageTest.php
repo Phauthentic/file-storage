@@ -27,6 +27,8 @@ use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantDoesNotExistEx
 use Phauthentic\Infrastructure\Storage\Processor\Exception\VariantException;
 use Phauthentic\Infrastructure\Storage\StorageAdapterFactory;
 use Phauthentic\Infrastructure\Storage\StorageService;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\LocalUrlBuilder;
+use Phauthentic\Infrastructure\Storage\UrlBuilder\UrlBuilderInterface;
 use RuntimeException;
 
 /**
@@ -230,5 +232,311 @@ class FileStorageTest extends TestCase
         $this->expectExceptionMessage('No resource given');
 
         $fileStorage->store($file);
+    }
+
+    /**
+     * @return void
+     */
+    public function testUrlBuilderIntegration(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_url_builder' . $ds
+                ]
+            ],
+        ]);
+
+        $urlBuilder = new LocalUrlBuilder('/files');
+        $fileStorage = new FileStorage(
+            $storageService,
+            new PathBuilder(),
+            $urlBuilder
+        );
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d976')
+            ->belongsToModel('User', '1');
+
+        $file = $fileStorage->store($file);
+
+        // URL should be built by the URL builder
+        $this->assertNotEmpty($file->url());
+        $this->assertStringStartsWith('/files', $file->url());
+
+        $file = $fileStorage->remove($file);
+    }
+
+    /**
+     * @return void
+     */
+    public function testMultipleCallbacks(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_multi_callbacks' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $callbackOrder = [];
+        $fileStorage->addCallback('beforeSave', function ($file) use (&$callbackOrder) {
+            $callbackOrder[] = 'before1';
+            return $file;
+        });
+        $fileStorage->addCallback('beforeSave', function ($file) use (&$callbackOrder) {
+            $callbackOrder[] = 'before2';
+            return $file;
+        });
+        $fileStorage->addCallback('afterSave', function ($file) use (&$callbackOrder) {
+            $callbackOrder[] = 'after1';
+            return $file;
+        });
+        $fileStorage->addCallback('afterSave', function ($file) use (&$callbackOrder) {
+            $callbackOrder[] = 'after2';
+            return $file;
+        });
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d977');
+
+        $fileStorage->store($file);
+
+        $expectedOrder = ['before1', 'before2', 'after1', 'after2'];
+        $this->assertEquals($expectedOrder, $callbackOrder);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallbackCanModifyFile(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_callback_modify' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $fileStorage->addCallback('beforeSave', function ($file) {
+            return $file->withFilename('modified_by_callback.jpg');
+        });
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d978')
+            ->withFilename('original.jpg');
+
+        $file = $fileStorage->store($file);
+
+        // File name should have been modified by callback
+        $this->assertEquals('modified_by_callback.jpg', $file->filename());
+
+        $file = $fileStorage->remove($file);
+    }
+
+    /**
+     * @return void
+     */
+    public function testAfterRemoveCallback(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_after_remove' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $callbackCalled = false;
+        $fileStorage->addCallback('afterRemove', function ($file) use (&$callbackCalled) {
+            $callbackCalled = true;
+            return $file;
+        });
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d979');
+
+        $file = $fileStorage->store($file);
+        $file = $fileStorage->remove($file);
+
+        $this->assertTrue($callbackCalled);
+    }
+
+    /**
+     * @return void
+     */
+    public function testBeforeRemoveCallback(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_before_remove' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $callbackCalled = false;
+        $fileStorage->addCallback('beforeRemove', function ($file) use (&$callbackCalled) {
+            $callbackCalled = true;
+            return $file;
+        });
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d980');
+
+        $file = $fileStorage->store($file);
+        $file = $fileStorage->remove($file);
+
+        $this->assertTrue($callbackCalled);
+    }
+
+    /**
+     * @return void
+     */
+    public function testRemoveWithMultipleVariants(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_remove_variants' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d981')
+            ->withVariant('thumb', ['path' => 'thumb/path.jpg', 'width' => 100])
+            ->withVariant('medium', ['path' => 'medium/path.jpg', 'width' => 300])
+            ->withVariant('large', ['path' => 'large/path.jpg', 'width' => 800]);
+
+        $file = $fileStorage->store($file);
+
+        // Remove should delete all variants and the main file from storage
+        // but the file object still contains the variant definitions
+        $file = $fileStorage->remove($file);
+
+        $this->assertTrue($file->hasVariants()); // Variants are still in the file object
+    }
+
+    /**
+     * @return void
+     */
+    public function testStoreWithConfigParameter(): void
+    {
+        $ds = DIRECTORY_SEPARATOR;
+
+        $storageService = new StorageService(
+            new StorageAdapterFactory(),
+        );
+
+        $storageService->setAdapterConfigFromArray([
+            'local' => [
+                'class' => LocalFactory::class,
+                'options' => [
+                    'root' => $this->storageRoot . $ds . 'storage_with_config' . $ds
+                ]
+            ],
+        ]);
+
+        $fileStorage = new FileStorage($storageService, new PathBuilder());
+
+        $fileOnDisk = $this->getFixtureFile('titus.jpg');
+        $file = FileFactory::fromDisk($fileOnDisk, 'local')
+            ->withUuid('914e1512-9153-4253-a81e-7ee2edc1d982');
+
+        // Test with Config parameter
+        $config = new \League\Flysystem\Config(['visibility' => 'private']);
+        $file = $fileStorage->store($file, $config);
+
+        $this->assertNotEmpty($file->path());
+
+        $file = $fileStorage->remove($file);
+    }
+
+
+    /**
+     * @return void
+     */
+    public function testRemoveWithAdapterFailure(): void
+    {
+        $storageService = $this->createMock(StorageService::class);
+        $adapter = $this->createMock(\League\Flysystem\AdapterInterface::class);
+
+        $storageService->expects($this->any())
+            ->method('adapter')
+            ->willReturn($adapter);
+
+        $adapter->expects($this->once())
+            ->method('delete')
+            ->willReturn(false);
+
+        $fileStorage = new FileStorage($storageService);
+
+        $file = File::create('test.jpg', 1000, 'image/jpeg', 'local')
+            ->withPath('/test/path.jpg');
+
+        // This should not throw an exception - remove() doesn't check delete() return value
+        $result = $fileStorage->remove($file);
+        $this->assertInstanceOf(\Phauthentic\Infrastructure\Storage\FileInterface::class, $result);
     }
 }
